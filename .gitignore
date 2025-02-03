@@ -1,0 +1,33 @@
+# Compiled class files
+*.class
+
+# Maven target directory
+target/
+
+# Logs and temporary files
+logs/
+*.log
+hs_err_pid*
+.DS_Store
+Thumbs.db
+
+# Dependency libraries
+lib/
+
+# User-specific files
+*.swp
+*.swo
+*.bak
+
+# JAR and compiled binaries
+*.jar
+*.war
+*.ear
+
+# Exclude local configuration
+config/local.properties
+config/*.json
+config/*.xml
+
+.classpath
+.project
