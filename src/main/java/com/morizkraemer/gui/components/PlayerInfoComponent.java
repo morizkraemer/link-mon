@@ -6,6 +6,8 @@ import javax.swing.border.Border;
 import org.deepsymmetry.beatlink.DeviceUpdate;
 
 import com.morizkraemer.services.DeviceFinderService;
+import static com.morizkraemer.gui.components.PlayerInfoComponent.CustomLabel;
+import static com.morizkraemer.gui.components.PlayerInfoComponent.CustomPanel;
 
 import java.awt.*;
 
@@ -21,14 +23,25 @@ public class PlayerInfoComponent extends JPanel {
     String oBpm;
     String bpm;
 
+    public static class CustomLabel extends JLabel {
+        public CustomLabel(String text, int horizontalALignment) {
+            super(text, horizontalALignment);
+            setForeground(Color.WHITE);
+        }
+    }
+
     public static class CustomPanel extends JPanel {
+        Border border = BorderFactory.createLineBorder(Color.WHITE);
         public CustomPanel() {
             setBackground(Color.BLACK);
+            setBorder(border);
         }
 
         public CustomPanel(LayoutManager layout) {
             super(layout);
+            setBorder(border);
             setBackground(Color.BLACK);
+
         }
     }
 
@@ -86,26 +99,24 @@ public class PlayerInfoComponent extends JPanel {
 // ----------------------------------
 // Device Number Field
 // ----------------------------------
-class DeviceNumberField extends PlayerInfoComponent.CustomPanel {
+class DeviceNumberField extends CustomPanel {
     public DeviceNumberField(int playerN) {
         setLayout(new BorderLayout());
-        Border border = BorderFactory.createLineBorder(Color.BLACK);
-        JLabel deviceLabel = new JLabel(String.valueOf(playerN), SwingConstants.CENTER);
-        setBorder(border);
+        CustomLabel deviceLabel = new CustomLabel(String.valueOf(playerN), SwingConstants.CENTER);
         add(deviceLabel, BorderLayout.CENTER);
     }
 }
 
+
+
 // ----------------------------------
 // Master Sync Field
 // ----------------------------------
-class MasterSyncField extends PlayerInfoComponent.CustomPanel {
+class MasterSyncField extends CustomPanel {
     public MasterSyncField() {
         setLayout(new GridLayout(2, 1)); // Stack Master and Sync
-        Border border = BorderFactory.createLineBorder(Color.BLACK);
-        JLabel masterLabel = new JLabel("Master", SwingConstants.CENTER);
-        JLabel syncLabel = new JLabel("Sync", SwingConstants.CENTER);
-        setBorder(border);
+        CustomLabel masterLabel = new CustomLabel("Master", SwingConstants.CENTER);
+        CustomLabel syncLabel = new CustomLabel("Sync", SwingConstants.CENTER);
         add(masterLabel);
         add(syncLabel);
     }
@@ -114,12 +125,10 @@ class MasterSyncField extends PlayerInfoComponent.CustomPanel {
 // ----------------------------------
 // Time Field
 // ----------------------------------
-class TimeField extends PlayerInfoComponent.CustomPanel {
+class TimeField extends CustomPanel {
     public TimeField(String playTime, String totalTime) {
         setLayout(new BorderLayout());
-        Border border = BorderFactory.createLineBorder(Color.BLACK);
-        JLabel timeLabel = new JLabel(playTime + "   " + totalTime, SwingConstants.CENTER);
-        setBorder(border);
+        CustomLabel timeLabel = new CustomLabel(playTime + "   " + totalTime, SwingConstants.CENTER);
         add(timeLabel, BorderLayout.CENTER);
     }
 }
@@ -127,12 +136,10 @@ class TimeField extends PlayerInfoComponent.CustomPanel {
 // ----------------------------------
 // Key Field
 // ----------------------------------
-class KeyField extends PlayerInfoComponent.CustomPanel {
+class KeyField extends CustomPanel {
     public KeyField(String key) {
         setLayout(new BorderLayout());
-        Border border = BorderFactory.createLineBorder(Color.BLACK);
-        JLabel keyLabel = new JLabel(key, SwingConstants.CENTER);
-        setBorder(border);
+        CustomLabel keyLabel = new CustomLabel(key, SwingConstants.CENTER);
         add(keyLabel, BorderLayout.CENTER);
     }
 }
@@ -140,23 +147,22 @@ class KeyField extends PlayerInfoComponent.CustomPanel {
 // ----------------------------------
 // BPM Field
 // ----------------------------------
-class BpmField extends PlayerInfoComponent.CustomPanel {
+class BpmField extends CustomPanel {
     public BpmField(String percent, String origBpm, String bpm) {
         setLayout(new GridBagLayout());
-        Border border = BorderFactory.createLineBorder(Color.BLACK);
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.weighty = 1;
         gbc.fill = GridBagConstraints.BOTH;
 
         // Left side (Stack % and origBPM vertically)
-        PlayerInfoComponent.CustomPanel bpmLeft = new PlayerInfoComponent.CustomPanel(new GridLayout(2, 1));
-        JLabel percentLabel = new JLabel(percent, SwingConstants.CENTER);
-        JLabel origBpmLabel = new JLabel(origBpm, SwingConstants.CENTER);
+        CustomPanel bpmLeft = new CustomPanel(new GridLayout(2, 1));
+        CustomLabel percentLabel = new CustomLabel(percent, SwingConstants.CENTER);
+        CustomLabel origBpmLabel = new CustomLabel(origBpm, SwingConstants.CENTER);
         bpmLeft.add(percentLabel);
         bpmLeft.add(origBpmLabel);
 
         // Right side (BPM label)
-        JLabel bpmLabel = new JLabel(bpm, SwingConstants.CENTER);
+        CustomLabel bpmLabel = new CustomLabel(bpm, SwingConstants.CENTER);
 
         // Add left and right components
         gbc.gridx = 0;
@@ -169,7 +175,6 @@ class BpmField extends PlayerInfoComponent.CustomPanel {
         gbc.weightx = 3;
         add(bpmLabel, gbc);
 
-        setBorder(border);
     }
 }
 //

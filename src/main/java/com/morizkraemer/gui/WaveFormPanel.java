@@ -34,6 +34,7 @@ public class WaveFormPanel extends JPanel {
         JPanel playerComponent = new JPanel(new BorderLayout());
         WaveFormComponent waveFormComponent = new WaveFormComponent(player.getDeviceNumber());
         PlayerInfoComponent playerInfo = new PlayerInfoComponent(playerN);
+        playerInfo.setPreferredSize(new Dimension(200, 200));
 
         playerComponent.add(waveFormComponent, BorderLayout.CENTER);
         playerComponent.add(playerInfo, BorderLayout.WEST);
