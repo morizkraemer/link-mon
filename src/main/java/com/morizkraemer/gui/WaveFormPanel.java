@@ -2,12 +2,11 @@ package com.morizkraemer.gui;
 
 import java.awt.*;
 import javax.swing.*;
-import javax.swing.border.*;
 
 import org.deepsymmetry.beatlink.DeviceAnnouncement;
-import org.deepsymmetry.beatlink.DeviceUpdate;
-import org.deepsymmetry.beatlink.data.WaveformDetailComponent;
 
+import com.morizkraemer.gui.components.PlayerInfoComponent;
+import com.morizkraemer.gui.components.WaveFormComponent;
 import com.morizkraemer.services.DeviceFinderService;
 
 public class WaveFormPanel extends JPanel {
@@ -45,35 +44,6 @@ public class WaveFormPanel extends JPanel {
         add(playerComponent);
     }
 
-    private class PlayerInfoComponent extends JPanel {
-        public PlayerInfoComponent(int playerN) {
-            Border border = BorderFactory.createLineBorder(Color.BLACK, 4);
-            setBorder(border);
-            setPreferredSize(new Dimension(200, 0));
 
-            JLabel bpmLabel = new JLabel();
-            JLabel playerNumber = new JLabel();
-            playerNumber.setText("" + playerN);
-
-            Timer swingTimer = new Timer(2000, e -> {
-                DeviceUpdate update = deviceFinder.getDeviceUpdate(playerN);
-                double bpm = update.getEffectiveTempo();
-                bpmLabel.setText(String.format("%.1f", bpm));
-
-            });
-
-            swingTimer.start();
-
-            add(playerNumber);
-            add(bpmLabel);
-        };
-    }
-
-    private class WaveFormComponent extends WaveformDetailComponent {
-        public WaveFormComponent(int player) {
-            super(player);
-            setDoubleBuffered(true);
-        }
-    }
 
 }
