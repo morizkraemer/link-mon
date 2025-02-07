@@ -60,7 +60,7 @@ public class SplashScreen extends JPanel {
         gbc.gridy = 2;
         add(loadingAnimation, gbc);
 
-        setBackground(AppConfig.Colors.BACKGROUND_MEDIUM);
+        setBackground(AppConfig.Colors.BACKGROUND_DARK);
     }
 
 }

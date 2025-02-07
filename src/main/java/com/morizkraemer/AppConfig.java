@@ -8,7 +8,9 @@ public class AppConfig {
         public static final Color ACCENT_RED = new Color(120, 30, 40);
         public static final Color ACCENT_RED_MUTED = new Color(120, 80, 85);
         public static final Color BACKGROUND_LIGHT = new Color(140, 140, 140);
-        public static final Color BACKGROUND_MEDIUM = new Color(30, 30, 30);
+        public static final Color BACKGROUND_MEDIUM = new Color(60, 60, 60);
+        public static final Color BACKGROUND_DARK = new Color(30, 30, 30);
+
 
         public static final Color ALERT_RED = new Color(200, 40, 40);
         public static final Color OK_GREEN = new Color(50, 168, 82);

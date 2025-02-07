@@ -1,9 +1,12 @@
 package com.morizkraemer.services;
 
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+
+import javax.swing.SwingUtilities;
 
 import org.deepsymmetry.beatlink.DeviceAnnouncement;
 import org.deepsymmetry.beatlink.DeviceAnnouncementListener;
@@ -15,6 +18,9 @@ import org.deepsymmetry.beatlink.VirtualCdj;
 import org.deepsymmetry.beatlink.data.BeatGridFinder;
 import org.deepsymmetry.beatlink.data.CrateDigger;
 import org.deepsymmetry.beatlink.data.MetadataFinder;
+import org.deepsymmetry.beatlink.data.TrackMetadata;
+import org.deepsymmetry.beatlink.data.TrackMetadataListener;
+import org.deepsymmetry.beatlink.data.TrackMetadataUpdate;
 //import org.deepsymmetry.beatlink.data.TrackMetadata;
 //import org.deepsymmetry.beatlink.data.WaveformDetail;
 import org.deepsymmetry.beatlink.data.WaveformFinder;
@@ -22,7 +28,7 @@ import org.deepsymmetry.beatlink.data.WaveformFinder;
 import com.morizkraemer.gui.ConsoleWindow;
 import com.morizkraemer.gui.StatusBar;
 
-import com.morizkraemer.gui.StatusBar.Status;
+import com.morizkraemer.gui.StatusBar.AppStatus;
 
 public class DeviceFinderService {
     ConsoleWindow consoleWindow = ConsoleWindow.getInstance();
@@ -37,26 +43,27 @@ public class DeviceFinderService {
     private WaveformFinder waveformFinder;
     private BeatGridFinder beatGridFinder;
 
-    private Set<DeviceAnnouncement> foundPlayers = new HashSet<>();
+    private Set<DeviceAnnouncement> foundPlayers = new LinkedHashSet<>();
     @SuppressWarnings("unused")
     private DeviceAnnouncement foundMixer;
 
     private final Map<Integer, DeviceUpdate> deviceUpdates = new ConcurrentHashMap<>();
+    private final Map<Integer, TrackMetadata> trackUpdates = new ConcurrentHashMap<>();
 
     public void runDeviceFinder() {
         new Thread(() -> {
             try {
+                SwingUtilities.invokeLater(() -> statusBar.setStatus(AppStatus.SERVICE_OFFLINE));
                 startServices();
                 discoverDevices();
                 deviceFinder.addDeviceAnnouncementListener(deviceAnnouncementListener);
                 virtualCdj.addUpdateListener(deviceUpdateListener);
+                metadataFinder.addTrackMetadataListener(trackMetadataListener);
 
             } catch (InterruptedException e) {
                 e.printStackTrace();
-                // TODO implement error handling
             } catch (Exception e) {
                 e.printStackTrace();
-                // TODO implement error handling
             }
 
         }).start();
@@ -65,13 +72,17 @@ public class DeviceFinderService {
     DeviceAnnouncementListener deviceAnnouncementListener = new DeviceAnnouncementListener() {
         @Override
         public void deviceFound(DeviceAnnouncement device) {
+            SwingUtilities.invokeLater(() -> statusBar.setStatus(AppStatus.DEVICES_FOUND));
             addDevice(device);
-            consoleWindow.appendToConsole("listener", device);
+            consoleWindow.appendToConsole("Device Found: ", device.getDeviceNumber() + "-" + device.getDeviceName());
         }
 
         @Override
         public void deviceLost(DeviceAnnouncement device) {
-            consoleWindow.appendToConsole("listener", device);
+            if (deviceFinder.getCurrentDevices().isEmpty()) {
+                SwingUtilities.invokeLater(() -> statusBar.setStatus(AppStatus.NO_DEVICES_FOUND));
+            }
+            consoleWindow.appendToConsole("Device Lost: ", device.getDeviceNumber() + "-" + device.getDeviceName());
         }
     };
 
@@ -82,20 +93,31 @@ public class DeviceFinderService {
             if (playerNumber < 9) {
                 deviceUpdates.put(playerNumber, update);
             }
-            //consoleWindow.appendToConsole("update", update);
+        }
+    };
+
+    TrackMetadataListener trackMetadataListener = new TrackMetadataListener() {
+        @Override
+        public void metadataChanged(TrackMetadataUpdate update) {
+            int playerNumber = update.player;
+            if (playerNumber < 9) {
+                trackUpdates.put(playerNumber, update.metadata);
+                consoleWindow.appendToConsole("track", update);
+            }
+
         }
     };
 
     public void discoverDevices() throws InterruptedException {
-        statusBar.setStatus(Status.SEARCHING);
         consoleWindow.appendToConsole("deviceManager", "Searching for devices on the network...");
         Thread.sleep(3000);
         Set<DeviceAnnouncement> devices = deviceFinder.getCurrentDevices();
+
         if (devices.isEmpty()) {
-            statusBar.setStatus(Status.NO_DEVICES_FOUND);
+            SwingUtilities.invokeLater(() -> statusBar.setStatus(AppStatus.NO_DEVICES_FOUND));
             consoleWindow.appendToConsole("deviceManager", "No devices found.");
         } else {
-            statusBar.setStatus(Status.DEVICES_FOUND);
+            SwingUtilities.invokeLater(() -> statusBar.setStatus(AppStatus.DEVICES_FOUND));
             for (DeviceAnnouncement device : devices) {
                 addDevice(device);
             }
@@ -104,10 +126,12 @@ public class DeviceFinderService {
 
     private void addDevice(DeviceAnnouncement device) {
         consoleWindow.appendToConsole("device", device);
+        int deviceNumber = device.getDeviceNumber();
         if (device.getDeviceNumber() < 9) {
             String deviceName = device.getDeviceName();
             if (deviceName.contains("CDJ") || deviceName.contains("XDJ")) {
                 foundPlayers.add(device);
+                metadataFinder.getLatestMetadataFor(deviceNumber);
             } else if (deviceName.contains("DJM")) {
                 foundMixer = device;
             } else {
@@ -125,6 +149,7 @@ public class DeviceFinderService {
         metadataFinder = MetadataFinder.getInstance();
         waveformFinder = WaveformFinder.getInstance();
         beatGridFinder = BeatGridFinder.getInstance();
+        SwingUtilities.invokeLater(() -> statusBar.setStatus(AppStatus.SEARCHING));
 
         deviceFinder.start();
         virtualCdj.start();
@@ -151,11 +176,8 @@ public class DeviceFinderService {
         return deviceUpdates.get(playerNumber);
     }
 
-    public static DeviceFinderService getInstance() {
-        if (instance == null) {
-            instance = new DeviceFinderService();
-        }
-        return instance;
+    public TrackMetadata getTrackUpdate(int playerNumber) {
+        return trackUpdates.get(playerNumber);
     }
 
     private DeviceFinderUpdateListener deviceFinderUpdateListener;
@@ -168,4 +190,10 @@ public class DeviceFinderService {
         this.deviceFinderUpdateListener = deviceFinderUpdateListener;
     }
 
+    public static DeviceFinderService getInstance() {
+        if (instance == null) {
+            instance = new DeviceFinderService();
+        }
+        return instance;
+    }
 }
