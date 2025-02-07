@@ -19,9 +19,9 @@ public class WaveFormPanel extends JPanel {
         deviceFinder.setDeviceFinderUpdateListener((players) -> {
             removeAll();
             consoleWindow.appendToConsole("WaveFormComponent", "Updated");
-            for (DeviceAnnouncement player : players) {
-                addPlayer(player);
-            }
+            players.forEach((playerN, deviceAnnouncement) -> {
+
+            });
             revalidate();
             repaint();
             mainWindow.switchToPanel(panelName);

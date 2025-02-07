@@ -43,7 +43,7 @@ public class DeviceFinderService {
     private WaveformFinder waveformFinder;
     private BeatGridFinder beatGridFinder;
 
-    private Set<DeviceAnnouncement> foundPlayers = new LinkedHashSet<>();
+    private Map<Integer, DeviceAnnouncement> foundPlayers = new ConcurrentHashMap<>();
     @SuppressWarnings("unused")
     private DeviceAnnouncement foundMixer;
 
@@ -127,10 +127,10 @@ public class DeviceFinderService {
     private void addDevice(DeviceAnnouncement device) {
         consoleWindow.appendToConsole("device", device);
         int deviceNumber = device.getDeviceNumber();
-        if (device.getDeviceNumber() < 9) {
+        if (deviceNumber < 9) {
             String deviceName = device.getDeviceName();
             if (deviceName.contains("CDJ") || deviceName.contains("XDJ")) {
-                foundPlayers.add(device);
+                foundPlayers.put(deviceNumber, device);
                 metadataFinder.getLatestMetadataFor(deviceNumber);
             } else if (deviceName.contains("DJM")) {
                 foundMixer = device;
@@ -183,7 +183,7 @@ public class DeviceFinderService {
     private DeviceFinderUpdateListener deviceFinderUpdateListener;
 
     public interface DeviceFinderUpdateListener {
-        void onPlayerFound(Set<DeviceAnnouncement> devices);
+        void onPlayerFound(Map<Integer, DeviceAnnouncement> devices);
     }
 
     public void setDeviceFinderUpdateListener(DeviceFinderUpdateListener deviceFinderUpdateListener) {
