@@ -20,6 +20,7 @@ public class WaveFormPanel extends JPanel {
             removeAll();
             consoleWindow.appendToConsole("WaveFormComponent", "Updated");
             players.forEach((playerN, deviceAnnouncement) -> {
+                addPlayer(deviceAnnouncement);
 
             });
             revalidate();
@@ -38,7 +39,7 @@ public class WaveFormPanel extends JPanel {
 
         playerComponent.add(waveFormComponent, BorderLayout.CENTER);
         playerComponent.add(playerInfo, BorderLayout.WEST);
-        playerComponent.setMaximumSize(new Dimension(Integer.MAX_VALUE, 200)); // Forces full width
+        playerComponent.setMaximumSize(new Dimension(Integer.MAX_VALUE, 200));
 
         waveFormComponent.setName("Player " + player.getDeviceNumber());
 
