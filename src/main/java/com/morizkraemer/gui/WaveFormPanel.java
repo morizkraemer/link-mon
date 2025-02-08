@@ -1,10 +1,13 @@
 package com.morizkraemer.gui;
 
 import java.awt.*;
+import java.util.Map;
+
 import javax.swing.*;
 
 import org.deepsymmetry.beatlink.DeviceAnnouncement;
 
+import com.morizkraemer.AppConfig;
 import com.morizkraemer.gui.components.PlayerInfoComponent;
 import com.morizkraemer.gui.components.WaveFormComponent;
 import com.morizkraemer.state.PlayerState;
@@ -12,9 +15,11 @@ import com.morizkraemer.state.PlayerState;
 public class WaveFormPanel extends JPanel {
     ConsoleWindow consoleWindow = ConsoleWindow.getInstance();
     PlayerState playerState = PlayerState.getInstance();
+    int foundPlayersVersion = -1;
 
     public WaveFormPanel(MainWindow mainWindow, String panelName) {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        setBackground(AppConfig.Colors.BACKGROUND_MEDIUM);
         setName(panelName);
 
         Timer swingTimer = new Timer(3000, (e) -> {
@@ -26,17 +31,18 @@ public class WaveFormPanel extends JPanel {
     }
 
     private void playerUpdate(MainWindow mainWindow, String panelName) {
-        consoleWindow.appendToConsole("this", "yeaaa");
-        if (playerState.foundPlayersChanged) {
-            removeAll();
+        int fpv = playerState.getFoundPlayersVersion();
+        if (fpv > foundPlayersVersion) {
+            Map<Integer, DeviceAnnouncement> foundPlayers = playerState.getFoundPlayers();
+            foundPlayersVersion = fpv;
             consoleWindow.appendToConsole("WaveFormComponent", "Updated");
-            playerState.getFoundPlayers().forEach((playerN, deviceAnnouncement) -> {
+            removeAll();
+            foundPlayers.forEach((playerN, deviceAnnouncement) -> {
                 addPlayer(deviceAnnouncement);
             });
             revalidate();
             repaint();
-            if (mainWindow.getActivePanel() != panelName) {
-                consoleWindow.appendToConsole("this", "switched");
+            if (mainWindow.getActivePanel() != panelName && !foundPlayers.isEmpty()) {
                 mainWindow.switchToPanel(panelName);
             }
         }
@@ -59,7 +65,5 @@ public class WaveFormPanel extends JPanel {
 
         add(playerComponent);
     }
-
-
 
 }

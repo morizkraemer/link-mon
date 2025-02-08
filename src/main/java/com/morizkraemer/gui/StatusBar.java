@@ -22,12 +22,10 @@ public class StatusBar extends JPanel {
     ConsoleWindow consoleWindow = ConsoleWindow.getInstance();
     PlayerState playerState = PlayerState.getInstance();
 
-
     private static StatusBar instance;
     private RoundedPanel statusLabel;
     private DevicePanel devicePanel;
     private JLabel statusText;
-
 
     public StatusBar() {
         setPreferredSize(new Dimension(0, 75));
@@ -51,14 +49,17 @@ public class StatusBar extends JPanel {
         setStatus(AppStatus.SERVICE_OFFLINE);
 
         Timer swingTimer = new Timer(2000, (e) -> {
-           setStatus(getStatusUpdate());
+            setStatus(getStatusUpdate());
+            devicePanel.updatePanel();
+
         });
 
         swingTimer.start();
 
     }
+
     private AppStatus getStatusUpdate() {
-        return playerState.getAppStatus();
+            return playerState.getAppStatus();
     }
 
     public void setStatus(AppStatus status) {
@@ -70,7 +71,6 @@ public class StatusBar extends JPanel {
     private Color getDarkerColor(Color color) {
         return color.darker();
     }
-
 
     public class RoundedPanel extends JPanel {
         private int cornerRadius;

@@ -1,6 +1,7 @@
 package com.morizkraemer.state;
 
 import java.awt.Color;
+import java.io.Console;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -10,8 +11,11 @@ import org.deepsymmetry.beatlink.data.TrackMetadata;
 import org.deepsymmetry.beatlink.data.TrackMetadataUpdate;
 
 import com.morizkraemer.AppConfig;
+import com.morizkraemer.gui.ConsoleWindow;
 
 public class PlayerState {
+    ConsoleWindow consoleWindow = ConsoleWindow.getInstance();
+
     public enum AppStatus {
         SERVICE_OFFLINE(AppConfig.Colors.BACKGROUND_MEDIUM, "Service offline"),
         SEARCHING(AppConfig.Colors.LOADING_BLUE, "Searching for devices"),
@@ -56,16 +60,15 @@ public class PlayerState {
     private AppStatus appStatus;
 
     private Map<Integer, DeviceAnnouncement> foundPlayers = new ConcurrentHashMap<>();
-    public Boolean foundPlayersChanged = false;
+    public int foundPlayersVersion = 0;
     @SuppressWarnings("unused")
     private DeviceAnnouncement foundMixer;
-    public Boolean foundMixerChanged = false;
-
+    public String foundMixerChanged = "changed";
 
     private final Map<Integer, DeviceUpdate> deviceUpdates = new ConcurrentHashMap<>();
-    public Boolean deviceUpdatesChanged = false;
+    public String deviceUpdatesChanged = "changed";
     private final Map<Integer, TrackMetadata> trackUpdates = new ConcurrentHashMap<>();
-    public Boolean trackUpdatesChanged = false;
+    public String trackUpdatesChanged = "changed";
 
     public PlayerState() {
 
@@ -73,17 +76,19 @@ public class PlayerState {
 
     public void storePlayerUpdate(int playerNumber, DeviceUpdate update) {
         deviceUpdates.put(playerNumber, update);
-        deviceUpdatesChanged = true;
     }
 
     public void storeTrackUpdate(int playerNumber, TrackMetadataUpdate update) {
         trackUpdates.put(playerNumber, update.metadata);
-        trackUpdatesChanged = true;
     }
 
     public void storeFoundPlayer(int playerNumber, DeviceAnnouncement device) {
         foundPlayers.put(playerNumber, device);
-        foundPlayersChanged = true;
+        foundPlayersVersion++;
+    }
+
+    public void storeFoundMixer(DeviceAnnouncement device) {
+        foundMixer = device;
     }
 
     public void setAppStatus(AppStatus status) {
@@ -94,28 +99,23 @@ public class PlayerState {
         return appStatus;
     }
 
-    public void storeFoundMixer(DeviceAnnouncement device) {
-        foundMixer = device;
-        foundMixerChanged = true;
+    public Map<Integer, DeviceAnnouncement> getFoundPlayers() {
+        return foundPlayers;
     }
     
-    public Map<Integer, DeviceAnnouncement> getFoundPlayers() {
-        foundPlayersChanged = false;
-        return foundPlayers;
+    public int getFoundPlayersVersion() {
+        return foundPlayersVersion;
     }
 
     public Map<Integer, DeviceUpdate> getDeviceUpdates() {
-        deviceUpdatesChanged = false;
         return deviceUpdates;
     }
 
     public Map<Integer, TrackMetadata> getTrackUpdates() {
-        trackUpdatesChanged = false;
         return trackUpdates;
     }
 
     public Map<Integer, DeviceUpdate> getAllDeviceUpdates() {
-        deviceUpdatesChanged = false;
         return deviceUpdates;
     }
 
@@ -126,8 +126,6 @@ public class PlayerState {
     public TrackMetadata getTrackUpdate(int playerNumber) {
         return trackUpdates.get(playerNumber);
     }
-
-
 
     public static PlayerState getInstance() {
         if (instance == null) {
