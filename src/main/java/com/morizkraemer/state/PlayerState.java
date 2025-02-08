@@ -78,8 +78,8 @@ public class PlayerState {
         deviceUpdates.put(playerNumber, update);
     }
 
-    public void storeTrackUpdate(int playerNumber, TrackMetadataUpdate update) {
-        trackUpdates.put(playerNumber, update.metadata);
+    public void storeTrackUpdate(int playerNumber, TrackMetadata update) {
+        trackUpdates.put(playerNumber, update);
     }
 
     public void storeFoundPlayer(int playerNumber, DeviceAnnouncement device) {

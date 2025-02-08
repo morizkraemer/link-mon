@@ -11,6 +11,7 @@ import org.deepsymmetry.beatlink.VirtualCdj;
 import org.deepsymmetry.beatlink.data.BeatGridFinder;
 import org.deepsymmetry.beatlink.data.CrateDigger;
 import org.deepsymmetry.beatlink.data.MetadataFinder;
+import org.deepsymmetry.beatlink.data.TrackMetadata;
 import org.deepsymmetry.beatlink.data.TrackMetadataListener;
 import org.deepsymmetry.beatlink.data.TrackMetadataUpdate;
 import org.deepsymmetry.beatlink.data.WaveformFinder;
@@ -85,7 +86,7 @@ public class DeviceFinderService {
             int playerNumber = update.player;
             if (playerNumber < 9) {
                 consoleWindow.appendToConsole("track", update);
-                playerState.storeTrackUpdate(playerNumber, update);
+                playerState.storeTrackUpdate(playerNumber, update.metadata);
             }
 
         }
@@ -114,7 +115,8 @@ public class DeviceFinderService {
             String deviceName = device.getDeviceName();
             if (deviceName.contains("CDJ") || deviceName.contains("XDJ")) {
                 playerState.storeFoundPlayer(deviceNumber, device);
-                metadataFinder.getLatestMetadataFor(deviceNumber);
+                TrackMetadata update = metadataFinder.getLatestMetadataFor(deviceNumber);
+                playerState.storeTrackUpdate(deviceNumber, update);
             } else if (deviceName.contains("DJM")) {
                 playerState.storeFoundMixer(device);
             } else {};
