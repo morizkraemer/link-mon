@@ -14,7 +14,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
-import com.morizkraemer.App;
 import com.morizkraemer.gui.components.DevicePanel;
 import com.morizkraemer.state.PlayerState;
 import com.morizkraemer.state.PlayerState.AppStatus;
@@ -28,7 +27,6 @@ public class StatusBar extends JPanel {
     private RoundedPanel statusLabel;
     private DevicePanel devicePanel;
     private JLabel statusText;
-    private AppStatus currentStatus;
 
 
     public StatusBar() {
@@ -64,7 +62,6 @@ public class StatusBar extends JPanel {
     }
 
     public void setStatus(AppStatus status) {
-        currentStatus = status;
         statusText.setText(status.getMessage());
         setBackground(status.getColor());
         repaint();

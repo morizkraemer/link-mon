@@ -45,6 +45,10 @@ public class PlayerState {
         PlayerStatus(int status) {
             this.status = status;
         }
+
+        public int getStatus() {
+            return status;
+        }
     }
 
     private static PlayerState instance;
