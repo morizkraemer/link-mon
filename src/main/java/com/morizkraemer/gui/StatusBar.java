@@ -7,54 +7,29 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridBagLayout;
 import java.awt.RenderingHints;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
-import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
+import javax.swing.Timer;
 
-import com.morizkraemer.AppConfig;
-import com.morizkraemer.AppConfig.Colors;
+import com.morizkraemer.App;
 import com.morizkraemer.gui.components.DevicePanel;
+import com.morizkraemer.state.PlayerState;
+import com.morizkraemer.state.PlayerState.AppStatus;
 
 public class StatusBar extends JPanel {
     ConsoleWindow consoleWindow = ConsoleWindow.getInstance();
+    PlayerState playerState = PlayerState.getInstance();
+
+
     private static StatusBar instance;
     private RoundedPanel statusLabel;
     private DevicePanel devicePanel;
     private JLabel statusText;
     private AppStatus currentStatus;
 
-    public enum AppStatus {
-        SERVICE_OFFLINE(AppConfig.Colors.BACKGROUND_MEDIUM, "Service offline"),
-        SEARCHING(AppConfig.Colors.LOADING_BLUE, "Searching for devices"),
-        NO_DEVICES_FOUND(AppConfig.Colors.ALERT_RED, "No devices found"),
-        DEVICES_FOUND(AppConfig.Colors.OK_GREEN, "Devices found");
-
-        private final Color color;
-        private final String message;
-
-        AppStatus(Color color, String message) {
-            this.color = color;
-            this.message = message;
-        }
-
-        public Color getColor() {
-            return color;
-        }
-
-        public String getMessage() {
-            return message;
-        }
-    }
 
     public StatusBar() {
         setPreferredSize(new Dimension(0, 75));
@@ -76,15 +51,22 @@ public class StatusBar extends JPanel {
 
         // Set initial status
         setStatus(AppStatus.SERVICE_OFFLINE);
+
+        Timer swingTimer = new Timer(2000, (e) -> {
+           setStatus(getStatusUpdate());
+        });
+
+        swingTimer.start();
+
+    }
+    private AppStatus getStatusUpdate() {
+        return playerState.getAppStatus();
     }
 
     public void setStatus(AppStatus status) {
         currentStatus = status;
         statusText.setText(status.getMessage());
         setBackground(status.getColor());
-
-        // Update label backgrounds and borders
-
         repaint();
     }
 

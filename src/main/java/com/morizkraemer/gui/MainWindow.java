@@ -17,6 +17,7 @@ public class MainWindow {
 
     private JFrame mainWindowFrame;
     private JPanel cardsPanel;
+    private String activePanelName;
 
     private void setupWindowLayout() {
         JPanel layoutPanel;
@@ -40,9 +41,14 @@ public class MainWindow {
     }
 
     public void switchToPanel(String panelName) {
+        activePanelName = panelName;
         CardLayout layout = (CardLayout) cardsPanel.getLayout();
         consoleWindow.appendToConsole("Main", panelName);
         SwingUtilities.invokeLater(() -> layout.show(cardsPanel, panelName));
+    }
+
+    public String getActivePanel() {
+        return activePanelName;
     }
 
     public MainWindow() {

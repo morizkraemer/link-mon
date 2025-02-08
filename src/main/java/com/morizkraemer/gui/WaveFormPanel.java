@@ -7,26 +7,40 @@ import org.deepsymmetry.beatlink.DeviceAnnouncement;
 
 import com.morizkraemer.gui.components.PlayerInfoComponent;
 import com.morizkraemer.gui.components.WaveFormComponent;
-import com.morizkraemer.services.DeviceFinderService;
+import com.morizkraemer.state.PlayerState;
 
 public class WaveFormPanel extends JPanel {
     ConsoleWindow consoleWindow = ConsoleWindow.getInstance();
-    DeviceFinderService deviceFinder = DeviceFinderService.getInstance();
+    PlayerState playerState = PlayerState.getInstance();
 
     public WaveFormPanel(MainWindow mainWindow, String panelName) {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setName(panelName);
-        deviceFinder.setDeviceFinderUpdateListener((players) -> {
+
+        Timer swingTimer = new Timer(3000, (e) -> {
+            playerUpdate(mainWindow, panelName);
+        });
+
+        swingTimer.start();
+
+    }
+
+    private void playerUpdate(MainWindow mainWindow, String panelName) {
+        consoleWindow.appendToConsole("this", "yeaaa");
+        if (playerState.foundPlayersChanged) {
             removeAll();
             consoleWindow.appendToConsole("WaveFormComponent", "Updated");
-            players.forEach((playerN, deviceAnnouncement) -> {
+            playerState.getFoundPlayers().forEach((playerN, deviceAnnouncement) -> {
                 addPlayer(deviceAnnouncement);
-
             });
             revalidate();
             repaint();
-            mainWindow.switchToPanel(panelName);
-        });
+            if (mainWindow.getActivePanel() != panelName) {
+                consoleWindow.appendToConsole("this", "switched");
+                mainWindow.switchToPanel(panelName);
+            }
+        }
+
     }
 
     public void addPlayer(DeviceAnnouncement player) {

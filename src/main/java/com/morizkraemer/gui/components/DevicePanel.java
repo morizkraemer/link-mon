@@ -16,20 +16,10 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import com.morizkraemer.AppConfig;
+import com.morizkraemer.state.PlayerState.PlayerStatus;
 
 public class DevicePanel extends JPanel {
-
-    private enum PlayerStatus {
-        ONLINE(3),
-        CONNECTING(2),
-        OFFLINE(1);
-
-        private final int status;
-
-        PlayerStatus(int status) {
-            this.status = status;
-        }
-    }
+    
 
     List<Integer> players = Arrays.asList(1, 2, 3, 4);
     private Map<Integer, PlayerIcon> playerIcons = new HashMap<>();
@@ -44,7 +34,6 @@ public class DevicePanel extends JPanel {
             playerIcons.put(player, playerComponent.getIcon());
             add(playerComponent);
         }
-
     }
 
     public void updatePlayerStatus(int player, PlayerStatus status) {

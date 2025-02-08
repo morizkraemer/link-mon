@@ -21,7 +21,7 @@ import org.deepsymmetry.beatlink.data.TrackMetadata;
 import com.morizkraemer.gui.ConsoleWindow;
 import com.morizkraemer.gui.components.PlayerInfoComponent.CustomLabel;
 import com.morizkraemer.gui.components.PlayerInfoComponent.CustomPanel;
-import com.morizkraemer.services.DeviceFinderService;
+import com.morizkraemer.state.PlayerState;
 
 public class PlayerInfoComponent extends JPanel {
     ConsoleWindow consoleWindow = ConsoleWindow.getInstance();
@@ -73,12 +73,11 @@ public class PlayerInfoComponent extends JPanel {
     }
 
     public PlayerInfoComponent(int playerN) {
-
-        DeviceFinderService deviceFinder = DeviceFinderService.getInstance();
+        PlayerState playerState = PlayerState.getInstance();
 
         Timer swingTimer = new Timer(2000, e -> {
-            DeviceUpdate deviceUpdate = deviceFinder.getDeviceUpdate(playerN);
-            TrackMetadata trackMetadata = deviceFinder.getTrackUpdate(playerN);
+            DeviceUpdate deviceUpdate = playerState.getDeviceUpdate(playerN);
+            TrackMetadata trackMetadata = playerState.getTrackUpdate(playerN);
             if (trackMetadata != null && deviceUpdate != null) {
                 consoleWindow.appendToConsole("component", trackMetadata);
                 deviceNumberField.updateDeviceNumber(deviceUpdate.getDeviceNumber());
