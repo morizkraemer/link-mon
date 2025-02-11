@@ -1,4 +1,4 @@
-package com.morizkraemer.gui.components;
+package com.morizkraemer.gui.components.fragments;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.AffineTransform;

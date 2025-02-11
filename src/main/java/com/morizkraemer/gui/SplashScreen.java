@@ -4,7 +4,7 @@ import java.awt.*;
 import javax.swing.*;
 
 import com.morizkraemer.AppConfig;
-import com.morizkraemer.gui.components.LoadingAnimation;
+import com.morizkraemer.gui.components.fragments.LoadingAnimation;
 import com.morizkraemer.services.DeviceFinderService;;
 
 public class SplashScreen extends JPanel {
