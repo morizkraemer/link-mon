@@ -1,14 +1,13 @@
 package com.morizkraemer.state;
 
 import java.awt.Color;
-import java.io.Console;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.deepsymmetry.beatlink.DeviceAnnouncement;
 import org.deepsymmetry.beatlink.DeviceUpdate;
 import org.deepsymmetry.beatlink.data.TrackMetadata;
-import org.deepsymmetry.beatlink.data.TrackMetadataUpdate;
+import org.deepsymmetry.beatlink.data.TrackPositionUpdate;
 
 import com.morizkraemer.AppConfig;
 import com.morizkraemer.gui.ConsoleWindow;
@@ -69,10 +68,7 @@ public class PlayerState {
     public String deviceUpdatesChanged = "changed";
     private final Map<Integer, TrackMetadata> trackUpdates = new ConcurrentHashMap<>();
     public String trackUpdatesChanged = "changed";
-
-    public PlayerState() {
-
-    }
+    private final Map<Integer, TrackPositionUpdate> trackPositionUpdates = new ConcurrentHashMap<>();
 
     public void storePlayerUpdate(int playerNumber, DeviceUpdate update) {
         deviceUpdates.put(playerNumber, update);
@@ -87,8 +83,17 @@ public class PlayerState {
         foundPlayersVersion++;
     }
 
+    public void removePlayer(int playerNumber) {
+        foundPlayers.remove(playerNumber);
+        foundPlayersVersion++;
+    }
+
     public void storeFoundMixer(DeviceAnnouncement device) {
         foundMixer = device;
+    }
+
+    public void storePositionUpdate(Integer deviceNumber, TrackPositionUpdate update) {
+        trackPositionUpdates.put(deviceNumber, update);
     }
 
     public void setAppStatus(AppStatus status) {
@@ -102,7 +107,7 @@ public class PlayerState {
     public Map<Integer, DeviceAnnouncement> getFoundPlayers() {
         return foundPlayers;
     }
-    
+
     public int getFoundPlayersVersion() {
         return foundPlayersVersion;
     }
@@ -115,16 +120,20 @@ public class PlayerState {
         return trackUpdates;
     }
 
-    public Map<Integer, DeviceUpdate> getAllDeviceUpdates() {
-        return deviceUpdates;
-    }
-
     public DeviceUpdate getDeviceUpdate(int playerNumber) {
         return deviceUpdates.get(playerNumber);
     }
 
     public TrackMetadata getTrackUpdate(int playerNumber) {
         return trackUpdates.get(playerNumber);
+    }
+
+    public Map<Integer, TrackPositionUpdate> getTrackPositionUpdates() {
+        return trackPositionUpdates;
+    }
+
+    public TrackPositionUpdate getTrackPositionUpdate(int playerNumber) {
+        return trackPositionUpdates.get(playerNumber);
     }
 
     public static PlayerState getInstance() {

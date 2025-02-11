@@ -1,6 +1,8 @@
 package com.morizkraemer.services;
 
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.deepsymmetry.beatlink.DeviceAnnouncement;
 import org.deepsymmetry.beatlink.DeviceAnnouncementListener;
@@ -11,15 +13,18 @@ import org.deepsymmetry.beatlink.VirtualCdj;
 import org.deepsymmetry.beatlink.data.BeatGridFinder;
 import org.deepsymmetry.beatlink.data.CrateDigger;
 import org.deepsymmetry.beatlink.data.MetadataFinder;
+import org.deepsymmetry.beatlink.data.TimeFinder;
 import org.deepsymmetry.beatlink.data.TrackMetadata;
 import org.deepsymmetry.beatlink.data.TrackMetadataListener;
 import org.deepsymmetry.beatlink.data.TrackMetadataUpdate;
+import org.deepsymmetry.beatlink.data.TrackPositionListener;
+import org.deepsymmetry.beatlink.data.TrackPositionUpdate;
 import org.deepsymmetry.beatlink.data.WaveformFinder;
 
 import com.morizkraemer.gui.ConsoleWindow;
 import com.morizkraemer.gui.StatusBar;
-import com.morizkraemer.state.PlayerState.AppStatus;
 import com.morizkraemer.state.PlayerState;
+import com.morizkraemer.state.PlayerState.AppStatus;
 
 public class DeviceFinderService {
     ConsoleWindow consoleWindow = ConsoleWindow.getInstance();
@@ -34,7 +39,7 @@ public class DeviceFinderService {
     private CrateDigger crateDigger;
     private WaveformFinder waveformFinder;
     private BeatGridFinder beatGridFinder;
-
+    private TimeFinder timeFinder;
 
     public void runDeviceFinder() {
         new Thread(() -> {
@@ -68,6 +73,7 @@ public class DeviceFinderService {
             if (deviceFinder.getCurrentDevices().isEmpty()) {
                 playerState.setAppStatus(AppStatus.NO_DEVICES_FOUND);
             }
+            removeDevice(device);
             consoleWindow.appendToConsole("Device Lost: ", device.getDeviceNumber() + "-" + device.getDeviceName());
         }
     };
@@ -75,22 +81,26 @@ public class DeviceFinderService {
     DeviceUpdateListener deviceUpdateListener = new DeviceUpdateListener() {
         @Override
         public void received(DeviceUpdate update) {
-            int playerNumber = update.getDeviceNumber();
-            playerState.storePlayerUpdate(playerNumber, update);
+            if (update != null) {
+                int playerNumber = update.getDeviceNumber();
+                playerState.storePlayerUpdate(playerNumber, update);
+            }
         }
     };
 
     TrackMetadataListener trackMetadataListener = new TrackMetadataListener() {
         @Override
         public void metadataChanged(TrackMetadataUpdate update) {
-            int playerNumber = update.player;
-            if (playerNumber < 9) {
-                consoleWindow.appendToConsole("track", update);
+            if (update.metadata != null) {
+                int playerNumber = update.player;
+                if (playerNumber < 9) {
+                }
                 playerState.storeTrackUpdate(playerNumber, update.metadata);
             }
-
         }
     };
+
+    Map<Integer, TrackPositionListener> trackPositionUpdateListeners = new ConcurrentHashMap<>();
 
     public void discoverDevices() throws InterruptedException {
         consoleWindow.appendToConsole("deviceManager", "Searching for devices on the network...");
@@ -104,24 +114,51 @@ public class DeviceFinderService {
             playerState.setAppStatus(AppStatus.DEVICES_FOUND);
             for (DeviceAnnouncement device : devices) {
                 addDevice(device);
-            };
-        };
+            }
+            ;
+        }
+        ;
     };
 
     private void addDevice(DeviceAnnouncement device) {
-        consoleWindow.appendToConsole("device", device);
+        consoleWindow.appendToConsole("device added", device);
         int deviceNumber = device.getDeviceNumber();
         if (deviceNumber < 9) {
             String deviceName = device.getDeviceName();
             if (deviceName.contains("CDJ") || deviceName.contains("XDJ")) {
                 playerState.storeFoundPlayer(deviceNumber, device);
                 TrackMetadata update = metadataFinder.getLatestMetadataFor(deviceNumber);
-                playerState.storeTrackUpdate(deviceNumber, update);
+                if (update != null) {
+                    playerState.storeTrackUpdate(deviceNumber, update);
+                }
+                TrackPositionListener trackPositionListener = new TrackPositionListener() {
+                    @Override
+                    public void movementChanged(TrackPositionUpdate positionUpdate) {
+                        if (positionUpdate != null) {
+                            playerState.storePositionUpdate(deviceNumber, positionUpdate);
+                        }
+                    }
+                };
+                trackPositionUpdateListeners.put(deviceNumber, trackPositionListener);
+                timeFinder.addTrackPositionListener(deviceNumber, trackPositionListener);
             } else if (deviceName.contains("DJM")) {
                 playerState.storeFoundMixer(device);
-            } else {};
-        };
+            } else {
+            }
+            ;
+        }
+        ;
     };
+
+    private void removeDevice(DeviceAnnouncement device) {
+        consoleWindow.appendToConsole("device removed", device);
+        int deviceNumber = device.getDeviceNumber();
+        TrackPositionListener listener = trackPositionUpdateListeners.get(deviceNumber);
+        if (listener != null) {
+            timeFinder.removeTrackPositionListener(listener);
+        }
+        playerState.removePlayer(deviceNumber);
+    }
 
     public void startServices() throws Exception {
         deviceFinder = DeviceFinder.getInstance();
@@ -130,6 +167,7 @@ public class DeviceFinderService {
         metadataFinder = MetadataFinder.getInstance();
         waveformFinder = WaveformFinder.getInstance();
         beatGridFinder = BeatGridFinder.getInstance();
+        timeFinder = TimeFinder.getInstance();
         playerState.setAppStatus(AppStatus.SEARCHING);
 
         deviceFinder.start();
@@ -138,6 +176,7 @@ public class DeviceFinderService {
         crateDigger.start();
         waveformFinder.start();
         beatGridFinder.start();
+        timeFinder.start();
 
     };
 

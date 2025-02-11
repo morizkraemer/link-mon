@@ -44,8 +44,13 @@ public class DevicePanel extends JPanel {
         if (fpv > foundPlayersVersion) {
             foundPlayersVersion = fpv;
             Map<Integer, DeviceAnnouncement> foundPlayers = playerState.getFoundPlayers();
-            foundPlayers.forEach((playerNumber, announcement) -> {
-                updatePlayerStatus(playerNumber, PlayerStatus.ONLINE, announcement);
+
+            players.forEach((playerNumber, component) -> {
+                if (foundPlayers.containsKey(playerNumber)) {
+                    updatePlayerStatus(playerNumber, PlayerStatus.ONLINE, foundPlayers.get(playerNumber));
+                } else {
+                    updatePlayerStatus(playerNumber, PlayerStatus.OFFLINE, null);
+                }
             });
             repaint();
         }
@@ -57,7 +62,7 @@ public class DevicePanel extends JPanel {
         }
 
         if (players.containsKey(player)) {
-            String name = (announcement != null) ? announcement.getDeviceName() : "Unknown";
+            String name = (announcement != null) ? announcement.getDeviceName() : "Disconnected";
             players.get(player).setPlayerName(name);
         }
     }

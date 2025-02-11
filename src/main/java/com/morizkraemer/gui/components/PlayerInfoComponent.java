@@ -16,9 +16,13 @@ import javax.swing.Timer;
 import javax.swing.border.Border;
 
 import org.deepsymmetry.beatlink.DeviceUpdate;
+import org.deepsymmetry.beatlink.Util;
 import org.deepsymmetry.beatlink.data.TrackMetadata;
+import org.deepsymmetry.beatlink.data.TrackPositionUpdate;
 
+import com.morizkraemer.AppConfig;
 import com.morizkraemer.gui.ConsoleWindow;
+
 import com.morizkraemer.gui.components.fragments.CustomComponents.CustomPanel;
 import com.morizkraemer.gui.components.fragments.CustomComponents.CustomLabel;
 import com.morizkraemer.state.PlayerState;
@@ -58,17 +62,20 @@ public class PlayerInfoComponent extends JPanel {
     private KeyField keyField;
 
     private BpmField bpmField;
+
     public PlayerInfoComponent(int playerN) {
         PlayerState playerState = PlayerState.getInstance();
         Border border = BorderFactory.createLineBorder(Color.WHITE);
 
-        Timer swingTimer = new Timer(2000, e -> {
+        Timer swingTimer = new Timer(1000, e -> {
             DeviceUpdate deviceUpdate = playerState.getDeviceUpdate(playerN);
             TrackMetadata trackMetadata = playerState.getTrackUpdate(playerN);
+            TrackPositionUpdate trackPositionUpdate = playerState.getTrackPositionUpdate(playerN);
             if (trackMetadata != null && deviceUpdate != null) {
                 deviceNumberField.updateDeviceNumber(deviceUpdate.getDeviceNumber());
                 masterSyncField.updateMasterSyncFiel(deviceUpdate.isTempoMaster(), deviceUpdate.isSynced());
-                timeField.updateTime("0:00", formatSecondsToTime(trackMetadata.getDuration()));
+                timeField.updateTime(formatMsToTime(trackPositionUpdate.milliseconds),
+                        formatSecondsToTime(trackMetadata.getDuration()));
                 keyField.updateKey(trackMetadata.getKey().label);
                 double pitchPercent = Util.pitchToPercentage(deviceUpdate.getPitch());
                 bpmField.updateBpmPanel(
@@ -184,15 +191,43 @@ class MasterSyncField extends CustomPanel {
 // Time Field
 // ----------------------------------
 class TimeField extends CustomPanel {
-    CustomLabel elapsedTime;
-    CustomLabel totalTime;
+    private final Border b = BorderFactory.createMatteBorder(0, 0, 1, 0, Color.WHITE);
+
+    private CustomLabel elapsedTime;
+    private CustomLabel totalTime;
+    private CustomLabel separator;
 
     public TimeField(String playT, String totalT) {
-        setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+        setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+
         elapsedTime = new CustomLabel(playT, SwingConstants.CENTER);
-        add(elapsedTime);
+        elapsedTime.setFont(AppConfig.Fonts.SUBTITLE_FONT);
+        separator = new CustomLabel(":", SwingConstants.CENTER);
         totalTime = new CustomLabel(totalT, SwingConstants.CENTER);
-        add(totalTime);
+        totalTime.setFont(AppConfig.Fonts.SUBTITLE_FONT);
+
+        // Prevent extra spacing between labels
+        gbc.gridy = 0;
+        gbc.insets = new Insets(0, 2, 0, 2); // Minimal spacing
+        gbc.anchor = GridBagConstraints.CENTER;
+
+        // Elapsed time label
+        gbc.gridx = 0;
+        gbc.weightx = 0; // No extra horizontal space
+        add(elapsedTime, gbc);
+
+        // Separator (:)
+        gbc.gridx = 1;
+        gbc.weightx = 0;
+        add(separator, gbc);
+
+        // Total time label
+        gbc.gridx = 2;
+        gbc.weightx = 0;
+        add(totalTime, gbc);
+
+        setBorder(b);
     }
 
     public void updateTime(String playT, String totalT) {
