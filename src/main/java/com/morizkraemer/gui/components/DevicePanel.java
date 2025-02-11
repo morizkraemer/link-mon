@@ -2,17 +2,19 @@ package com.morizkraemer.gui.components;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.swing.BorderFactory;
-import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
+import javax.swing.SwingConstants;
 
 import org.deepsymmetry.beatlink.DeviceAnnouncement;
 
@@ -27,8 +29,8 @@ public class DevicePanel extends JPanel {
     private Map<Integer, PlayerIcon> playerIcons = new HashMap<>();
 
     public DevicePanel() {
-        setBorder(BorderFactory.createLineBorder(Color.BLACK));
         setBackground(AppConfig.Colors.BACKGROUND_MEDIUM);
+        setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 
         for (int i = 1; i < 5; i++) {
             setOpaque(false);
@@ -73,24 +75,35 @@ public class DevicePanel extends JPanel {
 
         PlayerComponent(int player) {
             setName("Player" + player);
-            setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+            setLayout(new GridBagLayout());
             setBorder(BorderFactory.createLineBorder(Color.WHITE));
             setBackground(AppConfig.Colors.BACKGROUND_MEDIUM);
-            setPreferredSize(new Dimension(200, 60));
+            setPreferredSize(new Dimension(100, 60));
 
-            JLabel playerNumber = new JLabel("" + player);
-            playerName = new JLabel("Disconnected");
-            playerName.setForeground(AppConfig.Colors.BACKGROUND_LIGHT);
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.fill = GridBagConstraints.BOTH;
+
+            JLabel playerNumber = new JLabel("" + player, SwingConstants.CENTER);
             playerNumber.setForeground(Color.WHITE);
             playerNumber.setFont(AppConfig.Fonts.TITLE_FONT);
-            playerNumber.setBorder(new EmptyBorder(0, 10, 0, 0));
+            playerNumber.setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 0));
+
+            gbc.gridx = 0;
+            gbc.weightx = 1;
+            add(playerNumber, gbc);
+
+            playerName = new JLabel("Disconnected", SwingConstants.CENTER);
+            playerName.setForeground(AppConfig.Colors.BACKGROUND_LIGHT);
+
+            gbc.gridx = 1;
+            gbc.weightx = 3;
+            add(playerName, gbc);
 
             playerIcon = new PlayerIcon(player);
-            add(playerNumber);
-            add(Box.createHorizontalGlue());
-            add(playerName);
-            add(Box.createHorizontalGlue());
-            add(playerIcon);
+
+            gbc.gridx = 2;
+            gbc.weightx = 1;
+            add(playerIcon, gbc);
         }
 
         public void setPlayerName(String name) {
@@ -109,6 +122,7 @@ public class DevicePanel extends JPanel {
         ImageIcon online = new ImageIcon(getClass().getResource("/img/p2425_cdj2.png"));
 
         PlayerIcon(int player) {
+            setHorizontalAlignment(SwingConstants.CENTER);
             setName("Icon" + player);
             setStatus(PlayerStatus.OFFLINE);
         }

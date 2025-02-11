@@ -5,14 +5,15 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.RenderingHints;
 
-import javax.swing.Box;
-import javax.swing.BoxLayout;
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.Timer;
+import javax.swing.border.Border;
 
 import com.morizkraemer.gui.components.DevicePanel;
 import com.morizkraemer.state.PlayerState;
@@ -29,37 +30,48 @@ public class StatusBar extends JPanel {
 
     public StatusBar() {
         setPreferredSize(new Dimension(0, 75));
-        setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+        setLayout(new GridBagLayout());
+        setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
 
-        // Initialize RoundedPanels with default status color
-        statusText = new JLabel(AppStatus.SERVICE_OFFLINE.getMessage());
-        statusText.setForeground(Color.WHITE);
-        statusText.setText(AppStatus.SERVICE_OFFLINE.getMessage());
-        statusLabel = new RoundedPanel(10, getDarkerColor(AppStatus.SERVICE_OFFLINE.getColor()),
-                getDarkerColor(AppStatus.SERVICE_OFFLINE.getColor()).darker(), 2, 200);
-        statusLabel.add(statusText);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.gridy = 0;
 
         devicePanel = new DevicePanel();
+        gbc.gridx = 2;
+        gbc.weightx = 0.6;
+        add(devicePanel, gbc);
 
-        add(statusLabel);
-        add(Box.createHorizontalGlue());
-        add(devicePanel);
+        JPanel spacer = new JPanel();
+        spacer.setOpaque(false);
+        gbc.gridx = 1;
+        gbc.weightx = 0.3;
+        add(spacer, gbc);
 
-        // Set initial status
+
+        statusLabel = new RoundedPanel(10, getDarkerColor(AppStatus.SERVICE_OFFLINE.getColor()),
+                getDarkerColor(AppStatus.SERVICE_OFFLINE.getColor()).darker(), 2, 75);
+        statusText = new JLabel(AppStatus.SERVICE_OFFLINE.getMessage());
+        statusText.setForeground(Color.WHITE);
+
+        statusLabel.add(statusText);
+
+        gbc.gridx = 0;
+        gbc.weightx = 0.1;
+        add(statusLabel, gbc);
+
         setStatus(AppStatus.SERVICE_OFFLINE);
 
         Timer swingTimer = new Timer(2000, (e) -> {
             setStatus(getStatusUpdate());
             devicePanel.updatePanel();
-
         });
 
         swingTimer.start();
-
     }
 
     private AppStatus getStatusUpdate() {
-            return playerState.getAppStatus();
+        return playerState.getAppStatus();
     }
 
     public void setStatus(AppStatus status) {

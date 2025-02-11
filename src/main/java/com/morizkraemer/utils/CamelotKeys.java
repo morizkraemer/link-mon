@@ -51,12 +51,12 @@ public enum CamelotKeys {
     }
 
     // Static method to find a CamelotKey by its key string (e.g., "7A")
-    public static CamelotKeys fromString(String key) {
-        for (CamelotKeys ck : values()) {
-            if (ck.getKey().equalsIgnoreCase(key)) {
-                return ck;
+    public static CamelotKeys fromString(String inputKey) {
+        for (CamelotKeys key : values()) {
+            if (key.getKey().equalsIgnoreCase(inputKey)) {
+                return key;
             }
         }
-        throw new IllegalArgumentException("Invalid Camelot Key: " + key);
+        throw new IllegalArgumentException("Invalid Camelot Key: " + inputKey);
     }
 }
