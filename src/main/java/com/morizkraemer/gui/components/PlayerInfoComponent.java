@@ -26,6 +26,7 @@ import com.morizkraemer.gui.ConsoleWindow;
 import com.morizkraemer.gui.components.fragments.CustomComponents.CustomPanel;
 import com.morizkraemer.gui.components.fragments.CustomComponents.CustomLabel;
 import com.morizkraemer.state.PlayerState;
+import com.morizkraemer.utils.CamelotKeys;
 
 public class PlayerInfoComponent extends JPanel {
 
@@ -245,11 +246,17 @@ class KeyField extends CustomPanel {
     public KeyField(String key) {
         setLayout(new BorderLayout());
         keyLabel = new CustomLabel(key, SwingConstants.CENTER);
+        if (key != null) {
+            keyLabel.setForeground(CamelotKeys.fromString(key).getColor());
+        };
         add(keyLabel, BorderLayout.CENTER);
     }
 
     public void updateKey(String key) {
         keyLabel.setText(key);
+        if (key != null) {
+            keyLabel.setForeground(CamelotKeys.fromString(key).getColor());
+        };
     }
 }
 
