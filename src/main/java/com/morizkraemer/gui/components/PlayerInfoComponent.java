@@ -5,10 +5,10 @@ import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.LayoutManager;
 
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
@@ -19,18 +19,11 @@ import org.deepsymmetry.beatlink.DeviceUpdate;
 import org.deepsymmetry.beatlink.data.TrackMetadata;
 
 import com.morizkraemer.gui.ConsoleWindow;
-import com.morizkraemer.gui.components.PlayerInfoComponent.CustomLabel;
-import com.morizkraemer.gui.components.PlayerInfoComponent.CustomPanel;
+import com.morizkraemer.gui.components.fragments.CustomComponents.CustomPanel;
+import com.morizkraemer.gui.components.fragments.CustomComponents.CustomLabel;
 import com.morizkraemer.state.PlayerState;
 
 public class PlayerInfoComponent extends JPanel {
-    ConsoleWindow consoleWindow = ConsoleWindow.getInstance();
-
-    private DeviceNumberField deviceNumberField;
-    private MasterSyncField masterSyncField;
-    private TimeField timeField;
-    private KeyField keyField;
-    private BpmField bpmField;
 
     public static String formatSecondsToTime(int totalSeconds) {
         int hours = totalSeconds / 3600;
@@ -44,49 +37,43 @@ public class PlayerInfoComponent extends JPanel {
         }
     }
 
+    public static String formatMsToTime(long ms) {
+        long s = ms / 1000;
+        return formatSecondsToTime((int) s);
+    }
+
     public static String formatIntToFloat(int number) {
         float result = number / 1000f;
-        return String.format("%,.3f", result);
+        return String.format("%,.1f", result);
     }
 
-    public static class CustomLabel extends JLabel {
-        public CustomLabel(String text, int horizontalALignment) {
-            super(text, horizontalALignment);
-            setForeground(Color.WHITE);
-        }
-    }
+    ConsoleWindow consoleWindow = ConsoleWindow.getInstance();
 
-    public static class CustomPanel extends JPanel {
-        Border border = BorderFactory.createLineBorder(Color.WHITE);
+    private DeviceNumberField deviceNumberField;
 
-        public CustomPanel() {
-            setBackground(Color.BLACK);
-            setBorder(border);
-        }
+    private MasterSyncField masterSyncField;
 
-        public CustomPanel(LayoutManager layout) {
-            super(layout);
-            setBorder(border);
-            setBackground(Color.BLACK);
+    private TimeField timeField;
 
-        }
-    }
+    private KeyField keyField;
 
+    private BpmField bpmField;
     public PlayerInfoComponent(int playerN) {
         PlayerState playerState = PlayerState.getInstance();
+        Border border = BorderFactory.createLineBorder(Color.WHITE);
 
         Timer swingTimer = new Timer(2000, e -> {
             DeviceUpdate deviceUpdate = playerState.getDeviceUpdate(playerN);
             TrackMetadata trackMetadata = playerState.getTrackUpdate(playerN);
             if (trackMetadata != null && deviceUpdate != null) {
-                consoleWindow.appendToConsole("component", trackMetadata);
                 deviceNumberField.updateDeviceNumber(deviceUpdate.getDeviceNumber());
                 masterSyncField.updateMasterSyncFiel(deviceUpdate.isTempoMaster(), deviceUpdate.isSynced());
                 timeField.updateTime("0:00", formatSecondsToTime(trackMetadata.getDuration()));
                 keyField.updateKey(trackMetadata.getKey().label);
+                double pitchPercent = Util.pitchToPercentage(deviceUpdate.getPitch());
                 bpmField.updateBpmPanel(
-                        deviceUpdate.getPitch() + "%",
-                        formatIntToFloat(trackMetadata.getTempo()),
+                        String.format("%.2f", pitchPercent) + "%",
+                        formatIntToFloat(trackMetadata.getTempo() * 10),
                         String.format("%.1f", deviceUpdate.getEffectiveTempo()));
             }
             revalidate();
@@ -95,6 +82,7 @@ public class PlayerInfoComponent extends JPanel {
 
         setLayout(new GridLayout(3, 1));
         setBackground(Color.BLACK);
+        setBorder(border);
 
         deviceNumberField = new DeviceNumberField(playerN);
         masterSyncField = new MasterSyncField(null, null);
@@ -145,11 +133,14 @@ public class PlayerInfoComponent extends JPanel {
 // ----------------------------------
 class DeviceNumberField extends CustomPanel {
     private CustomLabel deviceLabel;
+    private final Border b = BorderFactory.createMatteBorder(0, 0, 1, 1, Color.WHITE);
 
     public DeviceNumberField(int playerN) {
         setLayout(new BorderLayout());
         deviceLabel = new CustomLabel(String.valueOf(playerN), SwingConstants.CENTER);
+        deviceLabel.setFont(AppConfig.Fonts.TITLE_FONT);
         add(deviceLabel, BorderLayout.CENTER);
+        setBorder(b);
     }
 
     public void updateDeviceNumber(int deviceNumber) {
@@ -163,6 +154,7 @@ class DeviceNumberField extends CustomPanel {
 class MasterSyncField extends CustomPanel {
     CustomLabel masterLabel;
     CustomLabel syncLabel;
+    private final Border b = BorderFactory.createMatteBorder(0, 0, 1, 0, Color.WHITE);
 
     public MasterSyncField(Boolean master, Boolean sync) {
         setLayout(new GridLayout(2, 1)); // Stack Master and Sync
@@ -170,6 +162,7 @@ class MasterSyncField extends CustomPanel {
         syncLabel = new CustomLabel("Sync", SwingConstants.CENTER);
         add(masterLabel);
         add(syncLabel);
+        setBorder(b);
     }
 
     public void updateMasterSyncFiel(Boolean master, Boolean sync) {
@@ -206,7 +199,6 @@ class TimeField extends CustomPanel {
         elapsedTime.setText(playT);
         totalTime.setText(totalT);
     }
-
 }
 
 // ----------------------------------
@@ -230,6 +222,7 @@ class KeyField extends CustomPanel {
 // BPM Field
 // ----------------------------------
 class BpmField extends CustomPanel {
+    private final Border b = BorderFactory.createMatteBorder(0, 1, 0, 1, Color.WHITE);
 
     private CustomLabel bpmLabel;
     private CustomLabel pitchLabel;
@@ -247,24 +240,26 @@ class BpmField extends CustomPanel {
         origBpmLabel = new CustomLabel(origBpm, SwingConstants.CENTER);
         bpmPanel.add(pitchLabel);
         bpmPanel.add(origBpmLabel);
+        bpmPanel.setBorder(b);
 
         // Right side (BPM label)
         bpmLabel = new CustomLabel(bpm, SwingConstants.CENTER);
+        bpmLabel.setFont(AppConfig.Fonts.SUBTITLE_FONT);
 
         // Add left and right components
         gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.weightx = 1;
-        add(bpmLabel, gbc);
+        gbc.weightx = 2;
+        add(bpmPanel, gbc);
 
-        gbc.gridx = 1;
+        gbc.gridx = 2;
         gbc.gridy = 0;
         gbc.weightx = 3;
         add(bpmLabel, gbc);
 
     }
 
-    public void updateBpmPanel(String bpm, String pitch, String oBpm) {
+    public void updateBpmPanel(String pitch, String oBpm, String bpm) {
         bpmLabel.setText(bpm);
         pitchLabel.setText(pitch);
         origBpmLabel.setText(oBpm);
