@@ -22,7 +22,8 @@ public class AppConfig {
     }
 
     public static class Fonts {
-        public static final Font TITLE_FONT = new Font("Arial", Font.BOLD, 32);
-        public static final Font SUBTITLE_FONT = new Font("Arial", Font.BOLD, 20);
+        public static final Font H1 = new Font("Arial", Font.BOLD, 32);
+        public static final Font H2 = new Font("Arial", Font.BOLD, 20);
+        public static final Font H3 = new Font("Arial", Font.BOLD, 15);
     }
 }

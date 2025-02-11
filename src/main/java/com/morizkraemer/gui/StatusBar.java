@@ -13,7 +13,6 @@ import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.Timer;
-import javax.swing.border.Border;
 
 import com.morizkraemer.gui.components.DevicePanel;
 import com.morizkraemer.state.PlayerState;

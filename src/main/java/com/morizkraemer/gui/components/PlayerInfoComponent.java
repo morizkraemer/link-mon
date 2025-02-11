@@ -2,14 +2,16 @@ package com.morizkraemer.gui.components;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
-import java.awt.LayoutManager;
 
 import javax.swing.BorderFactory;
-import javax.swing.JLabel;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
@@ -22,9 +24,8 @@ import org.deepsymmetry.beatlink.data.TrackPositionUpdate;
 
 import com.morizkraemer.AppConfig;
 import com.morizkraemer.gui.ConsoleWindow;
-
-import com.morizkraemer.gui.components.fragments.CustomComponents.CustomPanel;
 import com.morizkraemer.gui.components.fragments.CustomComponents.CustomLabel;
+import com.morizkraemer.gui.components.fragments.CustomComponents.CustomPanel;
 import com.morizkraemer.state.PlayerState;
 import com.morizkraemer.utils.CamelotKeys;
 
@@ -47,7 +48,7 @@ public class PlayerInfoComponent extends JPanel {
         return formatSecondsToTime((int) s);
     }
 
-    public static String formatIntToFloat(int number) {
+    public static String formatIntToFloatString(int number) {
         float result = number / 1000f;
         return String.format("%,.1f", result);
     }
@@ -81,7 +82,7 @@ public class PlayerInfoComponent extends JPanel {
                 double pitchPercent = Util.pitchToPercentage(deviceUpdate.getPitch());
                 bpmField.updateBpmPanel(
                         String.format("%.2f", pitchPercent) + "%",
-                        formatIntToFloat(trackMetadata.getTempo() * 10),
+                        formatIntToFloatString(trackMetadata.getTempo() * 10),
                         String.format("%.1f", deviceUpdate.getEffectiveTempo()));
             }
             revalidate();
@@ -146,7 +147,7 @@ class DeviceNumberField extends CustomPanel {
     public DeviceNumberField(int playerN) {
         setLayout(new BorderLayout());
         deviceLabel = new CustomLabel(String.valueOf(playerN), SwingConstants.CENTER);
-        deviceLabel.setFont(AppConfig.Fonts.TITLE_FONT);
+        deviceLabel.setFont(AppConfig.Fonts.H1);
         add(deviceLabel, BorderLayout.CENTER);
         setBorder(b);
     }
@@ -165,10 +166,17 @@ class MasterSyncField extends CustomPanel {
     private final Border b = BorderFactory.createMatteBorder(0, 0, 1, 0, Color.WHITE);
 
     public MasterSyncField(Boolean master, Boolean sync) {
-        setLayout(new GridLayout(2, 1)); // Stack Master and Sync
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS)); // Stack Master and Sync
         masterLabel = new CustomLabel("Master", SwingConstants.CENTER);
+        masterLabel.setBorder(BorderFactory.createEmptyBorder(12, 0, 0, 0));
+        masterLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        masterLabel.setFont(AppConfig.Fonts.H3);
         syncLabel = new CustomLabel("Sync", SwingConstants.CENTER);
+        syncLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        syncLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 12, 0));
+        syncLabel.setFont(AppConfig.Fonts.H3);
         add(masterLabel);
+        add(Box.createVerticalGlue());
         add(syncLabel);
         setBorder(b);
     }
@@ -203,10 +211,10 @@ class TimeField extends CustomPanel {
         GridBagConstraints gbc = new GridBagConstraints();
 
         elapsedTime = new CustomLabel(playT, SwingConstants.CENTER);
-        elapsedTime.setFont(AppConfig.Fonts.SUBTITLE_FONT);
+        elapsedTime.setFont(AppConfig.Fonts.H2);
         separator = new CustomLabel(":", SwingConstants.CENTER);
         totalTime = new CustomLabel(totalT, SwingConstants.CENTER);
-        totalTime.setFont(AppConfig.Fonts.SUBTITLE_FONT);
+        totalTime.setFont(AppConfig.Fonts.H2);
 
         // Prevent extra spacing between labels
         gbc.gridy = 0;
@@ -246,6 +254,7 @@ class KeyField extends CustomPanel {
     public KeyField(String key) {
         setLayout(new BorderLayout());
         keyLabel = new CustomLabel(key, SwingConstants.CENTER);
+        keyLabel.setFont(AppConfig.Fonts.H2);
         if (key != null) {
             keyLabel.setForeground(CamelotKeys.fromString(key).getColor());
         };
@@ -286,7 +295,7 @@ class BpmField extends CustomPanel {
 
         // Right side (BPM label)
         bpmLabel = new CustomLabel(bpm, SwingConstants.CENTER);
-        bpmLabel.setFont(AppConfig.Fonts.SUBTITLE_FONT);
+        bpmLabel.setFont(AppConfig.Fonts.H2);
 
         // Add left and right components
         gbc.gridx = 0;

@@ -15,11 +15,11 @@ public class SplashScreen extends JPanel {
         setLayout(new GridBagLayout());
 
         JLabel welcomeText = new JLabel("Welcome to Link-Mon", SwingConstants.CENTER);
-        welcomeText.setFont(AppConfig.Fonts.TITLE_FONT);
+        welcomeText.setFont(AppConfig.Fonts.H1);
         welcomeText.setForeground(AppConfig.Colors.ACCENT_RED);
 
         JLabel discoverDevicesLabel = new JLabel("Discovering Devices", SwingConstants.CENTER);
-        discoverDevicesLabel.setFont(AppConfig.Fonts.SUBTITLE_FONT);
+        discoverDevicesLabel.setFont(AppConfig.Fonts.H2);
         discoverDevicesLabel.setForeground(AppConfig.Colors.ACCENT_RED);
         //discoverDevicesLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
 

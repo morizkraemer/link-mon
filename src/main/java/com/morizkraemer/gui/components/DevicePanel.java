@@ -85,7 +85,7 @@ public class DevicePanel extends JPanel {
 
             JLabel playerNumber = new JLabel("" + player, SwingConstants.CENTER);
             playerNumber.setForeground(Color.WHITE);
-            playerNumber.setFont(AppConfig.Fonts.TITLE_FONT);
+            playerNumber.setFont(AppConfig.Fonts.H1);
             playerNumber.setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 0));
 
             gbc.gridx = 0;
