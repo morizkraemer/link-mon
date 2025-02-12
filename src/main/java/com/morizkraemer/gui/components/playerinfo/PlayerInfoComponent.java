@@ -1,13 +1,11 @@
-package com.morizkraemer.gui.components;
+package com.morizkraemer.gui.components.playerinfo;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
-import java.awt.Insets;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -28,30 +26,11 @@ import com.morizkraemer.gui.components.fragments.CustomComponents.CustomLabel;
 import com.morizkraemer.gui.components.fragments.CustomComponents.CustomPanel;
 import com.morizkraemer.state.PlayerState;
 import com.morizkraemer.utils.CamelotKeys;
+import com.morizkraemer.utils.Helpers;
+
 
 public class PlayerInfoComponent extends JPanel {
 
-    public static String formatSecondsToTime(int totalSeconds) {
-        int hours = totalSeconds / 3600;
-        int minutes = (totalSeconds % 3600) / 60;
-        int seconds = totalSeconds % 60;
-
-        if (hours > 0) {
-            return String.format("%d:%02d:%02d", hours, minutes, seconds);
-        } else {
-            return String.format("%02d:%02d", minutes, seconds);
-        }
-    }
-
-    public static String formatMsToTime(long ms) {
-        long s = ms / 1000;
-        return formatSecondsToTime((int) s);
-    }
-
-    public static String formatIntToFloatString(int number) {
-        float result = number / 1000f;
-        return String.format("%,.1f", result);
-    }
 
     ConsoleWindow consoleWindow = ConsoleWindow.getInstance();
 
@@ -74,16 +53,11 @@ public class PlayerInfoComponent extends JPanel {
             TrackMetadata trackMetadata = playerState.getTrackUpdate(playerN);
             TrackPositionUpdate trackPositionUpdate = playerState.getTrackPositionUpdate(playerN);
             if (trackMetadata != null && deviceUpdate != null) {
-                deviceNumberField.updateDeviceNumber(deviceUpdate.getDeviceNumber());
-                masterSyncField.updateMasterSyncFiel(deviceUpdate.isTempoMaster(), deviceUpdate.isSynced());
-                timeField.updateTime(formatMsToTime(trackPositionUpdate.milliseconds),
-                        formatSecondsToTime(trackMetadata.getDuration()));
-                keyField.updateKey(trackMetadata.getKey().label);
-                double pitchPercent = Util.pitchToPercentage(deviceUpdate.getPitch());
-                bpmField.updateBpmPanel(
-                        String.format("%.2f", pitchPercent) + "%",
-                        formatIntToFloatString(trackMetadata.getTempo() * 10),
-                        String.format("%.1f", deviceUpdate.getEffectiveTempo()));
+                deviceNumberField.updateDeviceNumber(deviceUpdate);
+                masterSyncField.updateMasterSyncFiel(deviceUpdate);
+                timeField.updateTime(trackPositionUpdate, trackMetadata);
+                keyField.updateKey(trackMetadata);
+                bpmField.updateBpmPanel(trackMetadata, deviceUpdate);
             }
             revalidate();
             repaint();
@@ -152,8 +126,9 @@ class DeviceNumberField extends CustomPanel {
         setBorder(b);
     }
 
-    public void updateDeviceNumber(int deviceNumber) {
-        deviceLabel.setText(String.valueOf(deviceNumber));
+    public void updateDeviceNumber(DeviceUpdate deviceUpdate) {
+        int playerN = deviceUpdate.getDeviceNumber();
+        deviceLabel.setText(String.valueOf(playerN));
     }
 }
 
@@ -181,7 +156,9 @@ class MasterSyncField extends CustomPanel {
         setBorder(b);
     }
 
-    public void updateMasterSyncFiel(Boolean master, Boolean sync) {
+    public void updateMasterSyncFiel(DeviceUpdate deviceUpdate) {
+        Boolean master = deviceUpdate.isTempoMaster();
+        Boolean sync = deviceUpdate.isSynced();
         if (master == true) {
             masterLabel.setForeground(Color.ORANGE);
         } else if (master == false) {
@@ -199,51 +176,6 @@ class MasterSyncField extends CustomPanel {
 // ----------------------------------
 // Time Field
 // ----------------------------------
-class TimeField extends CustomPanel {
-    private final Border b = BorderFactory.createMatteBorder(0, 0, 1, 0, Color.WHITE);
-
-    private CustomLabel elapsedTime;
-    private CustomLabel totalTime;
-    private CustomLabel separator;
-
-    public TimeField(String playT, String totalT) {
-        setLayout(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-
-        elapsedTime = new CustomLabel(playT, SwingConstants.CENTER);
-        elapsedTime.setFont(AppConfig.Fonts.H2);
-        separator = new CustomLabel(":", SwingConstants.CENTER);
-        totalTime = new CustomLabel(totalT, SwingConstants.CENTER);
-        totalTime.setFont(AppConfig.Fonts.H2);
-
-        // Prevent extra spacing between labels
-        gbc.gridy = 0;
-        gbc.insets = new Insets(0, 2, 0, 2); // Minimal spacing
-        gbc.anchor = GridBagConstraints.CENTER;
-
-        // Elapsed time label
-        gbc.gridx = 0;
-        gbc.weightx = 0; // No extra horizontal space
-        add(elapsedTime, gbc);
-
-        // Separator (:)
-        gbc.gridx = 1;
-        gbc.weightx = 0;
-        add(separator, gbc);
-
-        // Total time label
-        gbc.gridx = 2;
-        gbc.weightx = 0;
-        add(totalTime, gbc);
-
-        setBorder(b);
-    }
-
-    public void updateTime(String playT, String totalT) {
-        elapsedTime.setText(playT);
-        totalTime.setText(totalT);
-    }
-}
 
 // ----------------------------------
 // Key Field
@@ -257,15 +189,18 @@ class KeyField extends CustomPanel {
         keyLabel.setFont(AppConfig.Fonts.H2);
         if (key != null) {
             keyLabel.setForeground(CamelotKeys.fromString(key).getColor());
-        };
+        }
+        ;
         add(keyLabel, BorderLayout.CENTER);
     }
 
-    public void updateKey(String key) {
+    public void updateKey(TrackMetadata trackMetadata) {
+        String key = trackMetadata.getKey().label;
         keyLabel.setText(key);
         if (key != null) {
             keyLabel.setForeground(CamelotKeys.fromString(key).getColor());
-        };
+        }
+        ;
     }
 }
 
@@ -310,7 +245,12 @@ class BpmField extends CustomPanel {
 
     }
 
-    public void updateBpmPanel(String pitch, String oBpm, String bpm) {
+    public void updateBpmPanel(TrackMetadata trackMetadata, DeviceUpdate deviceUpdate) {
+
+        double pitchPercent = Util.pitchToPercentage(deviceUpdate.getPitch());
+        String pitch = String.format("%.2f", pitchPercent) + "%";
+        String oBpm = Helpers.formatIntToFloatString(trackMetadata.getTempo() * 10);
+        String bpm = String.format("%.1f", deviceUpdate.getEffectiveTempo());
         bpmLabel.setText(bpm);
         pitchLabel.setText(pitch);
         origBpmLabel.setText(oBpm);

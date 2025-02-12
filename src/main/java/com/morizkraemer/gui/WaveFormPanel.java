@@ -8,7 +8,7 @@ import javax.swing.*;
 import org.deepsymmetry.beatlink.DeviceAnnouncement;
 
 import com.morizkraemer.AppConfig;
-import com.morizkraemer.gui.components.PlayerInfoComponent;
+import com.morizkraemer.gui.components.playerinfo.PlayerInfoComponent;
 import com.morizkraemer.gui.components.WaveFormComponent;
 import com.morizkraemer.state.PlayerState;
 
