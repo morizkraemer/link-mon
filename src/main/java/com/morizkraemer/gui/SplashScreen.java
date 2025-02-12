@@ -14,7 +14,7 @@ public class SplashScreen extends JPanel {
     public SplashScreen() {
         setLayout(new GridBagLayout());
 
-        JLabel welcomeText = new JLabel("Welcome to Link-Mon", SwingConstants.CENTER);
+        JLabel welcomeText = new JLabel("Welcome to Link-Moon", SwingConstants.CENTER);
         welcomeText.setFont(AppConfig.Fonts.H1);
         welcomeText.setForeground(AppConfig.Colors.ACCENT_RED);
 
