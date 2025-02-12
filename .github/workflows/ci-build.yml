@@ -31,7 +31,7 @@ jobs:
         run: ls -lah target/  # Show what's inside target/
 
       - name: Upload JAR as Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: link-mon-jar
           path: target/link-mon-1.0-SNAPSHOT.jar  # Ensure correct file path
@@ -43,4 +43,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: link-mon-native
-          path: target/link-mon-1.0-SNAPSHOT.jar  # Upload the compiled native binary
+          path: target/link-mon
