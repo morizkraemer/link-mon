@@ -29,6 +29,10 @@ jobs:
         run: |
           mvn clean package  # Clean and build the project using Maven
           jpackage --verbose --input . --name LinkMon --main-jar link-mon-1.0-SNAPSHOT.jar --main-class com.morizkraemer.App --type exe -d build
+
+      - id: check
+        name: check dir
+        run: |
           echo "Listing files in the build directory:"
           dir D:/a/link-mon/link-mon/build
 
