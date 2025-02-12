@@ -1,8 +1,8 @@
 name: CI Build (Runs on Every Push)
 
 on:
-  push:    # Runs on every push to any branch
-  pull_request:  # Runs on pull requests
+  push:
+  pull_request:
 
 jobs:
   build:
@@ -15,12 +15,15 @@ jobs:
       - name: Set up GraalVM
         uses: graalvm/setup-graalvm@v1
         with:
-          java-version: '17'  
+          java-version: '21'  
           distribution: 'graalvm'  
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Verify GraalVM Installation
+      - name: Verify Java and GraalVM Setup
         run: |
+          echo "JAVA_HOME is: $JAVA_HOME"
+          echo "GRAALVM_HOME is: $GRAALVM_HOME"
+          ls -lah $JAVA_HOME/bin
           java -version
           native-image --version
 
@@ -28,16 +31,13 @@ jobs:
         run: mvn clean package
 
       - name: List Files in Target (Debugging)
-        run: ls -lah target/  # Show what's inside target/
-
-      - name: Upload JAR as Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: link-mon-jar
-          path: target/link-mon-1.0-SNAPSHOT.jar  # Ensure correct file path
+        run: ls -lah target/
 
       - name: Build Native Image
-        run: native-image -jar target/link-mon-1.0-SNAPSHOT.jar -o target/link-mon
+        run: |
+          export JAVA_HOME=$GRAALVM_HOME
+          export PATH=$JAVA_HOME/bin:$PATH
+          native-image -jar target/link-mon-1.0-SNAPSHOT.jar -o target/link-mon
 
       - name: Upload Native Image as Artifact
         uses: actions/upload-artifact@v4
