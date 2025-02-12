@@ -20,7 +20,7 @@ lib/
 *.bak
 
 # JAR and compiled binaries
-*.jar
+# *.jar
 *.war
 *.ear
 
