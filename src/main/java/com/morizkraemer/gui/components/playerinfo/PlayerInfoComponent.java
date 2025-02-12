@@ -69,7 +69,7 @@ public class PlayerInfoComponent extends JPanel {
 
         deviceNumberField = new DeviceNumberField(playerN);
         masterSyncField = new MasterSyncField(null, null);
-        timeField = new TimeField("0:00", null);
+        timeField = new TimeField(null, null);
         keyField = new KeyField(null);
         bpmField = new BpmField(null, null, null);
 
