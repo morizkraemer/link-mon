@@ -28,7 +28,7 @@ jobs:
         name: Build Windows Executable
         run: |
           mvn clean package  # Clean and build the project using Maven
-          jpackage --verbose --input . --name LinkMon --main-jar link-mon-1.0-SNAPSHOT.jar --main-class com.morizkraemer.App --type exe -d ./build
+          jpackage --verbose --input . --name LinkMon --main-jar link-mon-1.0-SNAPSHOT.jar --main-class com.morizkraemer.App --type exe -d build
 
       # SAVE THE EXECUTABLE
       - id: upload-executable
