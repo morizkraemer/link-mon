@@ -1,0 +1,47 @@
+name: Package Java Application for Multiple Platforms
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest] # Run on multiple OS
+        java: [17] # Java version to use
+
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v2
+
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: ${{ matrix.java }}
+          distribution: 'adoptopenjdk'
+
+      - name: Build JAR using Maven
+        run: mvn clean package
+
+      - name: Package for target OS
+        run: |
+          if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
+            jpackage --input target/ --name YourAppName --main-jar link-mon-1.0-SNAPSHOT.jar --main-class com.morizkraemer.App --type deb --icon src/main/resources/icon.png
+          elif [ "${{ matrix.os }}" == "macos-latest" ]; then
+            jpackage --input target/ --name YourAppName --main-jar link-mon-1.0-SNAPSHOT.jar --main-class com.morizkraemer.App --type dmg --icon src/main/resources/icon.icns
+          elif [ "${{ matrix.os }}" == "windows-latest" ]; then
+            jpackage --input target/ --name YourAppName --main-jar link-mon-1.0-SNAPSHOT.jar --main-class com.morizkraemer.App --type exe --icon src/main/resources/icon.ico
+          fi
+
+      - name: Upload packaged files as artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: packaged-files
+          path: target/YourAppName*
