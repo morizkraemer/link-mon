@@ -1,12 +1,9 @@
-name: GraalVM Build and Native Image
+name: GraalVM Build and Release
 
 on:
   push:
-    branches:
-      - master
-  pull_request:
-    branches:
-      - master
+    tags:
+      - "v*"  # Runs only on versioned tags like v1.0, v2.0, etc.
 
 jobs:
   build:
@@ -19,27 +16,31 @@ jobs:
       - name: Set up GraalVM
         uses: graalvm/setup-graalvm@v1
         with:
-          java-version: '21'           # Match your Java version
-          distribution: 'graalvm'       # Use GraalVM Community Edition
-          components: 'native-image'    # Install Native Image component
+          java-version: '17'  
+          distribution: 'graalvm'  
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Verify GraalVM Installation
         run: |
-          echo "GRAALVM_HOME: $GRAALVM_HOME"
-          echo "JAVA_HOME: $JAVA_HOME"
-          java --version
+          java -version
           native-image --version
 
       - name: Build Java Application
-        run: mvn clean package
+        run: mvn clean package && ls -lah target/  # Ensure file is created
 
       - name: Build Native Image
-        run: native-image -jar target/link-mon-1.0-SNAPSHOT.jar -H:+ReportExceptionStackTraces
+        run: native-image -jar target/link-mon-1.0-SNAPSHOT.jar -o target/link-mon
 
-      - name: Upload Native Image as Artifact
-        uses: actions/upload-artifact@v4
+      - name: List Files in Target (Debugging)
+        run: ls -lah target/
+
+      - name: Upload Native Image to GitHub Release
+        uses: softprops/action-gh-release@v1
         with:
-          name: native-image
-          path: link-mon-1.0-SNAPSHOT.jar
-  # Replace with your actual output binary name
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+          files: target/link-mon-1.0-SNAPSHOT.jar  # Ensure this matches the actual output
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
