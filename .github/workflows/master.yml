@@ -1,47 +1,40 @@
-name: Package Java Application for Multiple Platforms
+name: Build Windows Executable
 
 on:
-  push:
-    branches:
-      - master
-  pull_request:
-    branches:
-      - master
+  workflow_dispatch:  # Manual trigger only
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest] # Run on multiple OS
-        java: [17] # Java version to use
+  build-windows-executable:
+    name: Build Executable on Windows
+    runs-on: windows-latest  # Running on a Windows GitHub-hosted runner
 
     steps:
-      - name: Check out the code
-        uses: actions/checkout@v2
-
-      - name: Set up JDK
-        uses: actions/setup-java@v2
+      # SETUP BUILD ENVIRONMENT
+      - id: checkout-code
+        name: Checkout code
+        uses: actions/checkout@v3
         with:
-          java-version: ${{ matrix.java }}
-          distribution: 'termurin'
+          ref: main  # Checkout the latest code from the main branch
 
-      - name: Build JAR using Maven
-        run: mvn clean package
+      - id: setup-jdk
+        name: Setup JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'  # Using Adoptium (temurin) for Java 17
+          java-version: 17  # Specify Java version 17
 
-      - name: Package for target OS
+      # BUILD FOR DISTRIBUTION (Windows Executable)
+      - id: build
+        name: Build Windows Executable
         run: |
-          if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
-            jpackage --input target/ --name YourAppName --main-jar link-mon-1.0-SNAPSHOT.jar --main-class com.morizkraemer.App --type deb --icon src/main/resources/icon.png
-          elif [ "${{ matrix.os }}" == "macos-latest" ]; then
-            jpackage --input target/ --name YourAppName --main-jar link-mon-1.0-SNAPSHOT.jar --main-class com.morizkraemer.App --type dmg --icon src/main/resources/icon.icns
-          elif [ "${{ matrix.os }}" == "windows-latest" ]; then
-            jpackage --input target/ --name YourAppName --main-jar link-mon-1.0-SNAPSHOT.jar --main-class com.morizkraemer.App --type exe --icon src/main/resources/icon.ico
-          fi
+          mvn clean package  # Clean and build the project using Maven
+          jpackage --verbose --input . --name LinkMon --main-jar link-mon-1.0-SNAPSHOT.jar --main-class com.morizkraemer.App --type exe
 
-      - name: Upload packaged files as artifacts
-        uses: actions/upload-artifact@v4
+      # SAVE THE EXECUTABLE
+      - id: upload-executable
+        name: Upload Windows Executable
+        uses: actions/upload-artifact@v3
         with:
-          name: packaged-files
-          path: target/YourAppName*
+          path: ./LinkMon.exe  # Path to the generated executable (in the main directory)
+          name: windows-executable  # Name of the artifact to upload
+          retention-days: 1  # Retain the artifact for 1 day
