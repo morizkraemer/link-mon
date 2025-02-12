@@ -38,7 +38,7 @@ jobs:
         run: native-image -jar target/link-mon-1.0-SNAPSHOT.jar -H:+ReportExceptionStackTraces
 
       - name: Upload Native Image as Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: native-image
           path: link-mon-1.0-SNAPSHOT.jar
