@@ -29,8 +29,6 @@ jobs:
         run: |
           mvn clean package  # Clean and build the project using Maven
           jpackage --verbose --input . --name LinkMon --main-jar link-mon-1.0-SNAPSHOT.jar --main-class com.morizkraemer.App --type exe --output ./build
-          echo "Listing files in the current directory:"
-          ls -al  # List all files to see where the executable was placed
 
       # SAVE THE EXECUTABLE
       - id: upload-executable
