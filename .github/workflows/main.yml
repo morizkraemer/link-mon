@@ -1,0 +1,45 @@
+name: GraalVM Build and Native Image
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up GraalVM
+        uses: graalvm/setup-graalvm@v1
+        with:
+          java-version: '21'           # Match your Java version
+          distribution: 'graalvm'       # Use GraalVM Community Edition
+          components: 'native-image'    # Install Native Image component
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Verify GraalVM Installation
+        run: |
+          echo "GRAALVM_HOME: $GRAALVM_HOME"
+          echo "JAVA_HOME: $JAVA_HOME"
+          java --version
+          native-image --version
+
+      - name: Build Java Application
+        run: mvn clean package
+
+      - name: Build Native Image
+        run: native-image -jar target/link-mon-1.0-SNAPSHOT.jar -H:+ReportExceptionStackTraces
+
+      - name: Upload Native Image as Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: native-image
+          path: link-mon-1.0-SNAPSHOT.jar
+  # Replace with your actual output binary name
