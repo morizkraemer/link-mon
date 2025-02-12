@@ -40,7 +40,7 @@ jobs:
         run: native-image -jar target/link-mon-1.0-SNAPSHOT.jar -o target/link-mon
 
       - name: Upload Native Image as Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: link-mon-native
-          path: target/link-mon  # Upload the compiled native binary
+          path: target/link-mon-1.0-SNAPSHOT.jar  # Upload the compiled native binary
