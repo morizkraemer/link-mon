@@ -14,7 +14,7 @@ jobs:
         name: Checkout code
         uses: actions/checkout@v4
         with:
-          ref: main  # Checkout the latest code from the main branch
+          ref: master  # Checkout the latest code from the main branch
 
       - id: setup-jdk
         name: Setup JDK
@@ -24,7 +24,7 @@ jobs:
           java-version: 17  # Specify Java version 17
 
       # BUILD FOR DISTRIBUTION (Windows Executable)
-      - id: build
+      - id: master
         name: Build Windows Executable
         run: |
           mvn clean package  # Clean and build the project using Maven
