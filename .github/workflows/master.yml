@@ -14,7 +14,7 @@ jobs:
         name: Checkout code
         uses: actions/checkout@v4
         with:
-          ref: master  # Checkout the latest code from the main branch
+          ref: master  # Checkout the latest code from the master branch
 
       - id: setup-jdk
         name: Setup JDK
@@ -28,13 +28,15 @@ jobs:
         name: Build Windows Executable
         run: |
           mvn clean package  # Clean and build the project using Maven
-          jpackage --verbose --input . --name LinkMon --main-jar link-mon-1.0-SNAPSHOT.jar --main-class com.morizkraemer.App --type exe
+          jpackage --verbose --input . --name LinkMon --main-jar link-mon-1.0-SNAPSHOT.jar --main-class com.morizkraemer.App --type exe --output ./build
+          echo "Listing files in the current directory:"
+          ls -al  # List all files to see where the executable was placed
 
       # SAVE THE EXECUTABLE
       - id: upload-executable
         name: Upload Windows Executable
         uses: actions/upload-artifact@v4
         with:
-          path: ./LinkMon.exe  # Path to the generated executable (in the main directory)
-          name: windows-executable  # Name of the artifact to upload
+          path: ./build/LinkMon.exe  # Correct path to the generated executable
+          name: windows-executable
           retention-days: 1  # Retain the artifact for 1 day
