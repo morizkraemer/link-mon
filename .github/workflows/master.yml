@@ -33,6 +33,7 @@ jobs:
   
       - id: build-jar
         name: Build the jar with maven
+        shell: cmd
         run: |
           maven clean package
           dir target  # Windows equivalent of 'ls -la'
