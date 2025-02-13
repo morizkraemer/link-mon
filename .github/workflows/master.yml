@@ -33,9 +33,13 @@ jobs:
   
       - id: build-jar
         name: Build the jar with maven
-        shell: cmd
         run: |
           maven clean package
+          
+      - id: check-dir
+        shell: cmd
+        name: Check directory for output file
+        run: |
           dir target  # Windows equivalent of 'ls -la'
           if not exist target\link-mon-1.0-SNAPSHOT.jar (
             echo "ERROR: JAR file not found in target/"
