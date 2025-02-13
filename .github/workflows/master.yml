@@ -53,7 +53,8 @@ jobs:
         name: check dir
         run: |
           echo "Listing files in the build directory:"
-          dir ./output
+          dir
+          dir output
 
       # SAVE THE EXECUTABLE
       - id: upload-executable
