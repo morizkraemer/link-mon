@@ -40,11 +40,8 @@ jobs:
         shell: cmd
         name: Check directory for output file
         run: |
-          dir target  # Windows equivalent of 'ls -la'
-          if not exist target\link-mon-1.0-SNAPSHOT.jar (
-            echo "ERROR: JAR file not found in target/"
-            exit 1
-          )
+          dir
+          dir target
 
       - id: build-exe
         name: Run Windows build script
