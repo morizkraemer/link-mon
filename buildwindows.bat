@@ -1,14 +1,7 @@
 @echo off
 setlocal
 
-:: Set variables
-set APP_NAME=Link-Mon
-set APP_VERSION=1.0
-set MAIN_JAR=link-mon-1.0-SNAPSHOT.jar
-set INPUT_DIR=target
-set OUTPUT_DIR=output
-set RUNTIME_IMAGE=custom-runtime
-set APP_ICON=src\main\resources\icon.ico
+for /f "tokens=1,2 delims==" %%a in (build-config.env) do set %%a=%%b
 
 :: Ensure output directory exists
 rmdir /s "%OUTPUT_DIR%"
