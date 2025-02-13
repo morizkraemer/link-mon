@@ -34,7 +34,7 @@ jobs:
       - id: build-jar
         name: Build the jar with maven
         run: |
-          maven clean package
+          mvn clean package
           
       - id: check-dir
         shell: cmd
