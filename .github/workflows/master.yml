@@ -1,31 +1,31 @@
 name: Build Windows Executable
 
 on:
-  workflow_dispatch:  # Manual trigger only
+  workflow_dispatch:
 
 jobs:
   build-windows-executable:
     name: Build Executable on Windows
-    runs-on: windows-latest  # Running on a Windows GitHub-hosted runner
+    runs-on: windows-latest
 
     steps:
-      # SETUP BUILD ENVIRONMENT
+
       - id: checkout-code
         name: Checkout code
         uses: actions/checkout@v4
         with:
-          ref: master  # Checkout the latest code from the master branch
+          ref: master
 
       - id: setup-jdk
         name: Setup JDK
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'  # Using Adoptium (temurin) for Java 17
-          java-version: 17  # Specify Java version 17
+          distribution: 'temurin'
+          java-version: 17
 
       - id: install-wix
         name: Install WiX Toolset (Required for jpackage)
-        run: choco install wixtoolset -y  # Installs WiX on the runner
+        run: choco install wixtoolset -y
       
       - id: install-maven
         name: Install Maven
@@ -36,31 +36,17 @@ jobs:
         run: |
           mvn clean package
           
-      - id: check-dir
-        shell: cmd
-        name: Check directory for output file
-        run: |
-          dir
-          dir target
-
       - id: build-exe
         name: Run Windows build script
         run: |
             chmod +x buildWindows.bat
             ./buildWindows.bat
-          
-      - id: check
-        name: check dir
-        run: |
-          echo "Listing files in the build directory:"
-          dir
-          dir output
 
-      # SAVE THE EXECUTABLE
+
       - id: upload-executable
         name: Upload Windows Executable
         uses: actions/upload-artifact@v4
         with:
-          path: output/  # Correct path to the generated executable
+          path: output/
           name: windows-installer
-          retention-days: 1  # Retain the artifact for 1 day
+          retention-days: 1
