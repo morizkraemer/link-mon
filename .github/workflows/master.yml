@@ -23,24 +23,41 @@ jobs:
           distribution: 'temurin'  # Using Adoptium (temurin) for Java 17
           java-version: 17  # Specify Java version 17
 
-      # BUILD FOR DISTRIBUTION (Windows Executable)
-      - id: master
-        name: Build Windows Executable
+      - id: install-wix
+        name: Install WiX Toolset (Required for jpackage)
+        run: choco install wixtoolset -y  # Installs WiX on the runner
+      
+      - id: install-maven
+        name: Install Maven
+        run: choco install maven -y
+  
+      - id: build-jar
+        name: Build the jar with maven
         run: |
-          mvn clean package  # Clean and build the project using Maven
-          jpackage --verbose --input . --name LinkMon --main-jar link-mon-1.0-SNAPSHOT.jar --main-class com.morizkraemer.App --type exe -d build
+          maven clean package
+          dir target  # Windows equivalent of 'ls -la'
+          if not exist target\link-mon-1.0-SNAPSHOT.jar (
+            echo "ERROR: JAR file not found in target/"
+            exit 1
+          )
 
+      - id: build-exe
+        name: Run Windows build script
+        run: |
+            chmod +x buildWindows.bat
+            ./buildWindows.bat
+          
       - id: check
         name: check dir
         run: |
           echo "Listing files in the build directory:"
-          dir D:/a/link-mon/link-mon/build
+          dir ./output
 
       # SAVE THE EXECUTABLE
       - id: upload-executable
         name: Upload Windows Executable
         uses: actions/upload-artifact@v4
         with:
-          path: D:/a/link-mon/link-mon/build/LinkMon-1.0.exe  # Correct path to the generated executable
-          name: windows-executable
+          path: output/  # Correct path to the generated executable
+          name: windows-installer
           retention-days: 1  # Retain the artifact for 1 day
