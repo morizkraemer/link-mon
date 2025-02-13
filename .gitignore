@@ -1,8 +1,10 @@
 # Compiled class files
 *.class
 
-# Maven target directory
+# generated files
 target/
+custom-runtime/
+output/
 
 # Logs and temporary files
 logs/
