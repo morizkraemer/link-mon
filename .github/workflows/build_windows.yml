@@ -57,4 +57,3 @@ jobs:
           name: "Windows Release v${{ env.RELEASE_VERSION }}"
           body: "Release for Windows."
           files: "output/*"
-          append: true

@@ -49,4 +49,3 @@ jobs:
           name: "Release for all Versions v${{ env.RELEASE_VERSION }}"
           body: "Release for All Versions"
           files: "output/*"
-          append: true
