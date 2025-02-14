@@ -1,9 +1,7 @@
 name: Build Windows Executable
 
 on:
-  push:
-    tags:
-      - "v*"
+  workflow_call:
 
 jobs:
   build-windows-executable:
@@ -12,50 +10,34 @@ jobs:
 
     steps:
 
-      - id: checkout-code
-        name: Checkout code
+      - name: Checkout code
         uses: actions/checkout@v4
         with:
           ref: master
 
-      - id: extraxt-version
-        name: Extract Version from Tag
-        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
-
-      - id: setup-jdk
-        name: Setup JDK
+      - name: Setup JDK
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: 17
 
-      - id: install-wix
-        name: Install WiX Toolset (Required for jpackage)
+      - name: Install WiX Toolset (Required for jpackage)
         run: choco install wixtoolset -y
       
-      - id: install-maven
-        name: Install Maven
+      - name: Install Maven
         run: choco install maven -y
   
-      - id: build-jar
-        name: Build the jar with maven
+      - name: Build the jar with maven
         run: |
           mvn clean package
           
-      - id: build-exe
-        name: Run Windows build script
+      - name: Run Windows build script
         run: |
             chmod +x buildWindows.bat
             ./buildWindows.bat
 
-      - id: create-release
-        name: Create Release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload Windows Artifact
+        uses: actions/upload-artifact@v4
         with:
-          tag_name: ${{ github.ref_name }}
-          release_name: Release ${{ github.ref_name }}
-          body: New Release
-          draft: false
-          prerelease: false
+          name: windows-installer
+          path: output/*
