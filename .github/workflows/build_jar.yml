@@ -42,11 +42,14 @@ jobs:
           echo "JAR_FILE=$JAR_FILE" >> $GITHUB_ENV
 
       - id: create-release
-        name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
+        name: Create Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          tag_name: v${{ env.RELEASE_VERSION }}
-          name: "Release for all Versions v${{ env.RELEASE_VERSION }}"
-          body: "Release for All Versions"
+          tag_name: ${{ github.ref_name }}
+          release_name: Release ${{ github.ref_name }}
+          body: New Release
+          draft: false
+          prerelease: false
           files: "output/*"
