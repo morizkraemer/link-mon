@@ -1,0 +1,44 @@
+name: Build JAR
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-jar:
+    name: Buld JAR
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - id: checkout-code
+        name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: master
+
+      - id: setup-jdk
+        name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: 17
+
+      - id: build-jar
+        name: Build the jar with maven
+        run: |
+          ./mvnw clean package
+
+      - id: find-jar
+        name: Find and Upload JAR
+        run: |
+          JAR_FILE=$(find target -type f -name "*.jar" ! -name "original-*.jar")
+          echo "Uploading JAR: $JAR_FILE"
+          echo "JAR_FILE=$JAR_FILE" >> $GITHUB_ENV
+
+      - id: upload-jar
+        name: upload JAR
+        uses: actions/upload-artifact@v4
+        with:
+          path: target/${{env.JAR_FILE}}
+          name: fat-jar
+          retention-days: 1
