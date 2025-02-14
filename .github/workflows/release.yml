@@ -2,8 +2,8 @@ name: Release Controller
 
 on:
   push:
-    # tags:
-    #   - "v*"  # Trigger when a new version tag is pushed
+    tags:
+      - "v*"  # Trigger when a new version tag is pushed
 
 jobs:
   build-windows:
@@ -40,47 +40,44 @@ jobs:
           name: fat-jar
           path: all-artifacts/jar/
 
-      - name: List Downloaded Files
-        run: ls -R all-artifacts/
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref_name }}
+          release_name: "Release ${{ github.ref_name }}"
+          body: "Automated release for version ${{ github.ref_name }}"
+          draft: false
+          prerelease: false
 
-      # - name: Create GitHub Release
-      #   id: create_release
-      #   uses: actions/create-release@v1
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   with:
-      #     tag_name: ${{ github.ref_name }}
-      #     release_name: "Release ${{ github.ref_name }}"
-      #     body: "Automated release for version ${{ github.ref_name }}"
-      #     draft: false
-      #     prerelease: false
-      #
-      # - name: Upload Windows Artifact to Release
-      #   uses: actions/upload-release-asset@v1
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   with:
-      #     upload_url: ${{ steps.create_release.outputs.upload_url }}
-      #     asset_path: all-artifacts/windows/*
-      #     asset_name: windows-installer.exe
-      #     asset_content_type: application/octet-stream
-      #
-      # - name: Upload macOS Artifact to Release
-      #   uses: actions/upload-release-asset@v1
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   with:
-      #     upload_url: ${{ steps.create_release.outputs.upload_url }}
-      #     asset_path: all-artifacts/macos/*
-      #     asset_name: macos-installer.dmg
-      #     asset_content_type: application/octet-stream
-      #
-      # - name: Upload Linux Artifact to Release
-      #   uses: actions/upload-release-asset@v1
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   with:
-      #     upload_url: ${{ steps.create_release.outputs.upload_url }}
-      #     asset_path: all-artifacts/linux/*
-      #     asset_name: linux-installer.AppImage
-      #     asset_content_type: application/octet-stream
+      - name: Upload Windows Artifact to Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: all-artifacts/windows/*
+          asset_name: Link-Mon-Installer_AMD64.exe
+          asset_content_type: application/octet-stream
+
+      - name: Upload macOS Artifact to Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: all-artifacts/macos/*
+          asset_name: Link-Mon_ARM64.dmg
+          asset_content_type: application/octet-stream
+
+      - name: Upload Linux Artifact to Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: all-artifacts/jar/*
+          asset_name: Link-mon_FAT-JAR.jar
+          asset_content_type: application/octet-stream
