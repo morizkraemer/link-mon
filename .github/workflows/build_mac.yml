@@ -26,7 +26,7 @@ jobs:
       - id: build-jar
         name: Build the jar with maven
         run: |
-          mvnw clean package
+          ./mvnw clean package
           
       - id: build-dmg
         name: Run macos build script
