@@ -1,0 +1,43 @@
+name: Build Mac DMG
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-windows-executable:
+    name: Build Mac DmG
+    runs-on: macos-latest
+
+    steps:
+
+      - id: checkout-code
+        name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: master
+
+      - id: setup-jdk
+        name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: 17
+
+      - id: build-jar
+        name: Build the jar with maven
+        run: |
+          mvnw clean package
+          
+      - id: build-dmg
+        name: Run macos build script
+        run: |
+            chmod +x buildmac.sh
+            ./buildmac.sh
+
+      - id: upload-executable
+        name: Upload mac dmg 
+        uses: actions/upload-artifact@v4
+        with:
+          path: output/
+          name: mac-dmg
+          retention-days: 1
