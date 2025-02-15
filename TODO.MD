@@ -9,4 +9,4 @@
     problems
         - waveform jitter with 3 players
         - remove disconnected players from waveformpanel\
-        - 
+        - non numeric keys fix

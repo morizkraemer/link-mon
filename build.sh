@@ -4,6 +4,7 @@
 echo "Building the project..."
 mvn clean package
 
+
 # Step 2: Check if the build was successful
 if [ $? -eq 0 ]; then
     echo "Build successful."
