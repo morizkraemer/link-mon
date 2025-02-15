@@ -6,6 +6,8 @@ set -a
 source build-config.env
 set +a
 
+cd ../
+
 # Ensure JAVA_HOME is set
 if [ -z "$JAVA_HOME" ]; then
     export JAVA_HOME=$(/usr/libexec/java_home -v 17)

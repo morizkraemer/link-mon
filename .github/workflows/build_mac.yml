@@ -30,6 +30,7 @@ jobs:
           
       - name: Run macos build script
         run: |
+            cd build
             chmod +x buildmac.sh
             ./buildmac.sh
 

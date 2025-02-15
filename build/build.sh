@@ -1,5 +1,8 @@
 #!/bin/bash
 
+
+cd ../
+
 # Step 1: Clean and package the Maven project
 echo "Building the project..."
 mvn clean package

@@ -4,6 +4,8 @@ setlocal
 :: Load variables from build-config.env
 for /f "tokens=1,2 delims==" %%a in (build-config.env) do set %%a=%%b
 
+cd ..\
+
 if not exist "%RUNTIME_IMAGE%" (
     echo Creating custom runtime...
     jlink --output "%RUNTIME_IMAGE%" --module-path "%JAVA_HOME%\jmods" --add-modules java.base,java.desktop,java.naming

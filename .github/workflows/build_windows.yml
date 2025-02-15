@@ -33,6 +33,7 @@ jobs:
           
       - name: Run Windows build script
         run: |
+            cd build
             chmod +x buildWindows.bat
             ./buildWindows.bat
 
