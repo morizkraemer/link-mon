@@ -34,6 +34,9 @@ public class MainWindow {
         WaveFormPanel waveFormPanel = new WaveFormPanel(this, "Workspace");
         workSpace.add(waveFormPanel, BorderLayout.NORTH);
 
+        WaveFormPreviewPanel waveFormPreviewPanel = new WaveFormPreviewPanel(this, "WorkSpace");
+        workSpace.add(waveFormPreviewPanel, BorderLayout.SOUTH);
+
         cardsPanel.add(workSpace, "Workspace");
 
         MenuBar menuBar = new MenuBar(waveFormPanel);
