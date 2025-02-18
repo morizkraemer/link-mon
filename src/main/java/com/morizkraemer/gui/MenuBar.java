@@ -2,7 +2,6 @@ package com.morizkraemer.gui;
 
 import javax.swing.*;
 
-import com.morizkraemer.gui.components.WaveFormComponent;
 //import com.morizkraemer.test.TestComponent;
 
 public class MenuBar extends JMenuBar {

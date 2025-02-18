@@ -5,6 +5,8 @@
 target/
 custom-runtime/
 output/
+src/main/java/com/morizkraemer/test/
+src/main/java/com/morizkraemer/gui/components/waveformcomponent/CustomWaveFormComponent.java
 
 # Logs and temporary files
 logs/
