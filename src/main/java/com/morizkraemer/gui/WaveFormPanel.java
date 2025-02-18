@@ -53,7 +53,7 @@ public class WaveFormPanel extends JPanel {
         int playerN = player.getDeviceNumber();
 
         JPanel playerComponent = new JPanel(new BorderLayout());
-        WaveFormComponent waveFormComponent = new WaveFormComponent(player.getDeviceNumber());
+        WaveFormComponent waveFormComponent = new WaveFormComponent(playerN);
         PlayerInfoComponent playerInfo = new PlayerInfoComponent(playerN);
         playerInfo.setPreferredSize(new Dimension(200, 200));
 
@@ -61,7 +61,7 @@ public class WaveFormPanel extends JPanel {
         playerComponent.add(playerInfo, BorderLayout.WEST);
         playerComponent.setMaximumSize(new Dimension(Integer.MAX_VALUE, 200));
 
-        waveFormComponent.setName("Player " + player.getDeviceNumber());
+        waveFormComponent.setName("Player " + playerN);
 
         add(playerComponent);
     }
