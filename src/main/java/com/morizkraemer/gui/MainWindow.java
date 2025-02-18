@@ -12,7 +12,6 @@ public class MainWindow {
 
     DeviceFinderService deviceFinder = DeviceFinderService.getInstance();
     ConsoleWindow consoleWindow = ConsoleWindow.getInstance();
-    MenuBar menuBar = MenuBar.getInstance();
     StatusBar statusBar = StatusBar.getInstance();
 
     private JFrame mainWindowFrame;
@@ -21,7 +20,7 @@ public class MainWindow {
 
     private void setupWindowLayout() {
         JPanel layoutPanel;
-        SwingUtilities.invokeLater(() -> consoleWindow.openConsole());
+        //SwingUtilities.invokeLater(() -> consoleWindow.openConsole());
 
         layoutPanel = new JPanel(new BorderLayout());
         cardsPanel = new JPanel(new CardLayout());
@@ -31,6 +30,8 @@ public class MainWindow {
 
         WaveFormPanel waveFormPanel = new WaveFormPanel(this, "WaveFormPanel");
         cardsPanel.add(waveFormPanel, "WaveFormPanel");
+
+        MenuBar menuBar = new MenuBar();
 
         layoutPanel.add(cardsPanel, BorderLayout.CENTER);
         layoutPanel.add(statusBar, BorderLayout.PAGE_END);

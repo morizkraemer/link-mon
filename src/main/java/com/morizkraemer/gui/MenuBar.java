@@ -2,9 +2,11 @@ package com.morizkraemer.gui;
 
 import javax.swing.*;
 
+import com.morizkraemer.gui.components.WaveFormComponent;
+//import com.morizkraemer.test.TestComponent;
+
 public class MenuBar extends JMenuBar {
 
-    private static MenuBar instance;
 
     ConsoleWindow consoleWindow = ConsoleWindow.getInstance();
     DeviceManager deviceManager = DeviceManager.getInstance();
@@ -18,6 +20,12 @@ public class MenuBar extends JMenuBar {
 
         closeMenuItem = new JMenuItem("Close");
         closeMenuItem.addActionListener(e -> System.exit(0));
+
+        //JMenuItem testItem = new JMenuItem("Test");
+        //testItem.addActionListener(e -> {
+        //    new TestComponent();
+        //});
+        //viewMenu.add(testItem);
 
         deviceManagerMenuItem = new JMenuItem("Device Manager");
         deviceManagerMenuItem.addActionListener(e -> deviceManager.openDeviceManager());
@@ -37,10 +45,4 @@ public class MenuBar extends JMenuBar {
         add(viewMenu);
     }
 
-    public static MenuBar getInstance() {
-        if (instance == null) {
-                instance = new MenuBar();
-        }
-        return instance;
-    }
 }
