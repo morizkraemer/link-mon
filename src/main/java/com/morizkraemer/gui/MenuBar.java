@@ -28,30 +28,30 @@ public class MenuBar extends JMenuBar {
         //
 
         showWaveformPanel = new JCheckBoxMenuItem("Show Waveforms", true);
-
         showWaveformPanel.addActionListener(e -> {
             Boolean isSelected = showWaveformPanel.isSelected();
             SwingUtilities.invokeLater(() -> {
                 waveFormPanel.setVisibilty(isSelected);
-            }
-
-            );
+            });
         });
 
         deviceManagerMenuItem = new JMenuItem("Device Manager");
         deviceManagerMenuItem.addActionListener(e -> deviceManager.openDeviceManager());
         preferencesMenuItem = new JMenuItem("Preferences");
-        consoleMenuItem = new JCheckBoxMenuItem("Show Console", false);
 
-        fileMenu.add(closeMenuItem);
-        viewMenu.add(deviceManagerMenuItem);
-        viewMenu.add(consoleMenuItem);
-        viewMenu.add(showWaveformPanel);
-        settingsMenu.add(preferencesMenuItem);
+        consoleMenuItem = new JCheckBoxMenuItem("Show Console", false);
         consoleMenuItem.addActionListener(e -> {
             Boolean isSelected = consoleMenuItem.isSelected();
             consoleWindow.setVisibility(isSelected);
         });
+
+        fileMenu.add(closeMenuItem);
+
+        viewMenu.add(deviceManagerMenuItem);
+        viewMenu.add(consoleMenuItem);
+        viewMenu.add(showWaveformPanel);
+
+        settingsMenu.add(preferencesMenuItem);
 
         add(fileMenu);
         add(settingsMenu);

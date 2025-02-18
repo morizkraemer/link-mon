@@ -37,7 +37,6 @@ public class WaveFormPanel extends JPanel {
         if (fpv > foundPlayersVersion) {
             Map<Integer, DeviceAnnouncement> foundPlayers = playerState.getFoundPlayers();
             foundPlayersVersion = fpv;
-            consoleWindow.appendToConsole("WaveFormComponent", "Updated");
             removeAll();
             foundPlayers.forEach((playerN, deviceAnnouncement) -> {
                 addPlayer(deviceAnnouncement);
