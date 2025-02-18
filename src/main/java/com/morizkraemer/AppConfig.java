@@ -21,6 +21,7 @@ public class AppConfig {
 
         public static final Color TEXT_DARK = new Color(62, 62, 62);
         public static final Color PURE_WHITE = new Color(255, 255, 255);
+        public static final Color PURE_BLACK = new Color(0, 0, 0);
     }
 
     public static class Fonts {

@@ -8,6 +8,7 @@ import javax.swing.*;
 import org.deepsymmetry.beatlink.DeviceAnnouncement;
 
 import com.morizkraemer.AppConfig;
+import com.morizkraemer.AppConfig.Colors;
 import com.morizkraemer.gui.components.playerinfo.PlayerInfoComponent;
 import com.morizkraemer.gui.components.WaveFormComponent;
 import com.morizkraemer.state.PlayerState;
@@ -18,6 +19,7 @@ public class WaveFormPanel extends JPanel {
     int foundPlayersVersion = -1;
 
     public WaveFormPanel(MainWindow mainWindow, String panelName) {
+        setBorder(BorderFactory.createLineBorder(Colors.PURE_BLACK, 5));
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBackground(AppConfig.Colors.BACKGROUND_MEDIUM);
         setName(panelName);
@@ -64,6 +66,10 @@ public class WaveFormPanel extends JPanel {
         waveFormComponent.setName("Player " + playerN);
 
         add(playerComponent);
+    }
+
+    public void setVisibilty(Boolean visibility) {
+        setVisible(visibility);
     }
 
 }

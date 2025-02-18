@@ -1,6 +1,7 @@
 package com.morizkraemer.gui;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 
 import com.morizkraemer.services.DeviceFinderService;
 
@@ -28,10 +29,14 @@ public class MainWindow {
         JPanel splashScreenPanel = new SplashScreen();
         cardsPanel.add(splashScreenPanel, "SplashScreen");
 
-        WaveFormPanel waveFormPanel = new WaveFormPanel(this, "WaveFormPanel");
-        cardsPanel.add(waveFormPanel, "WaveFormPanel");
+        JPanel workSpace = new WorkspacePanel();
 
-        MenuBar menuBar = new MenuBar();
+        WaveFormPanel waveFormPanel = new WaveFormPanel(this, "Workspace");
+        workSpace.add(waveFormPanel, BorderLayout.NORTH);
+
+        cardsPanel.add(workSpace, "Workspace");
+
+        MenuBar menuBar = new MenuBar(waveFormPanel);
 
         layoutPanel.add(cardsPanel, BorderLayout.CENTER);
         layoutPanel.add(statusBar, BorderLayout.PAGE_END);

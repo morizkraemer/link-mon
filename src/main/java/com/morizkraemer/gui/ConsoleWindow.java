@@ -66,7 +66,7 @@ public class ConsoleWindow {
         frame.setVisible(true);
     }
 
-    public void toggleConsole() {
-        frame.setVisible(!frame.isVisible());
+    public void setVisibility(Boolean visibility) {
+        frame.setVisible(visibility);
     }
 }

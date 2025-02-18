@@ -6,13 +6,13 @@ import javax.swing.*;
 
 public class MenuBar extends JMenuBar {
 
-
     ConsoleWindow consoleWindow = ConsoleWindow.getInstance();
     DeviceManager deviceManager = DeviceManager.getInstance();
     private JMenu fileMenu, settingsMenu, viewMenu;
-    private JMenuItem closeMenuItem, deviceManagerMenuItem, consoleMenuItem, preferencesMenuItem;
+    private JMenuItem closeMenuItem, deviceManagerMenuItem, preferencesMenuItem;
+    private JCheckBoxMenuItem showWaveformPanel, consoleMenuItem;
 
-    public MenuBar() {
+    public MenuBar(WaveFormPanel waveFormPanel) {
         fileMenu = new JMenu("File");
         settingsMenu = new JMenu("Settings");
         viewMenu = new JMenu("View");
@@ -20,23 +20,37 @@ public class MenuBar extends JMenuBar {
         closeMenuItem = new JMenuItem("Close");
         closeMenuItem.addActionListener(e -> System.exit(0));
 
-        //JMenuItem testItem = new JMenuItem("Test");
-        //testItem.addActionListener(e -> {
-        //    new TestComponent();
-        //});
-        //viewMenu.add(testItem);
+        // JMenuItem testItem = new JMenuItem("Test");
+        // testItem.addActionListener(e -> {
+        // new TestComponent();
+        // });
+        // viewMenu.add(testItem);
+        //
+
+        showWaveformPanel = new JCheckBoxMenuItem("Show Waveforms", true);
+
+        showWaveformPanel.addActionListener(e -> {
+            Boolean isSelected = showWaveformPanel.isSelected();
+            SwingUtilities.invokeLater(() -> {
+                waveFormPanel.setVisibilty(isSelected);
+            }
+
+            );
+        });
 
         deviceManagerMenuItem = new JMenuItem("Device Manager");
         deviceManagerMenuItem.addActionListener(e -> deviceManager.openDeviceManager());
         preferencesMenuItem = new JMenuItem("Preferences");
-        consoleMenuItem = new JMenuItem("Console");
+        consoleMenuItem = new JCheckBoxMenuItem("Show Console", false);
 
         fileMenu.add(closeMenuItem);
         viewMenu.add(deviceManagerMenuItem);
-        settingsMenu.add(preferencesMenuItem);
         viewMenu.add(consoleMenuItem);
+        viewMenu.add(showWaveformPanel);
+        settingsMenu.add(preferencesMenuItem);
         consoleMenuItem.addActionListener(e -> {
-            consoleWindow.openConsole();
+            Boolean isSelected = consoleMenuItem.isSelected();
+            consoleWindow.setVisibility(isSelected);
         });
 
         add(fileMenu);
