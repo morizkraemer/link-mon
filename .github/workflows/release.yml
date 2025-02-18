@@ -2,7 +2,7 @@ name: Release Controller
 
 on:
   push:
-    tag:
+    tags:
       - "v*"  # Trigger when a new version tag is pushed
 
 jobs:
