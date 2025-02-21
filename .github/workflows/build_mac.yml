@@ -2,6 +2,7 @@ name: Build Mac DMG
 
 on:
   workflow_call:
+  workflow_dispatch:
 
 jobs:
   build-windows-executable:
