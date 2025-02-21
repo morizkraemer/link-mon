@@ -10,9 +10,9 @@ public class MenuBar extends JMenuBar {
     DeviceManager deviceManager = DeviceManager.getInstance();
     private JMenu fileMenu, settingsMenu, viewMenu;
     private JMenuItem closeMenuItem, deviceManagerMenuItem, preferencesMenuItem;
-    private JCheckBoxMenuItem showWaveformPanel, consoleMenuItem;
+    private JCheckBoxMenuItem showWaveformPanel, showWaveformPreviewPanel, consoleMenuItem;
 
-    public MenuBar(WaveFormPanel waveFormPanel) {
+    public MenuBar(WaveFormPanel waveFormPanel, WaveFormPreviewPanel waveFormPreviewPanel) {
         fileMenu = new JMenu("File");
         settingsMenu = new JMenu("Settings");
         viewMenu = new JMenu("View");
@@ -35,6 +35,12 @@ public class MenuBar extends JMenuBar {
             });
         });
 
+        showWaveformPreviewPanel = new JCheckBoxMenuItem("Show Waveform Previews", true);
+        showWaveformPanel.addActionListener(e -> {
+            Boolean isSelected = showWaveformPreviewPanel.isSelected();
+            waveFormPreviewPanel.setVisibility(isSelected);
+        });
+
         deviceManagerMenuItem = new JMenuItem("Device Manager");
         deviceManagerMenuItem.addActionListener(e -> deviceManager.openDeviceManager());
         preferencesMenuItem = new JMenuItem("Preferences");
@@ -50,6 +56,7 @@ public class MenuBar extends JMenuBar {
         viewMenu.add(deviceManagerMenuItem);
         viewMenu.add(consoleMenuItem);
         viewMenu.add(showWaveformPanel);
+        viewMenu.add(showWaveformPreviewPanel);
 
         settingsMenu.add(preferencesMenuItem);
 

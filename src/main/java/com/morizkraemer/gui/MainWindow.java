@@ -39,7 +39,7 @@ public class MainWindow {
 
         cardsPanel.add(workSpace, "Workspace");
 
-        MenuBar menuBar = new MenuBar(waveFormPanel);
+        MenuBar menuBar = new MenuBar(waveFormPanel, waveFormPreviewPanel);
 
         layoutPanel.add(cardsPanel, BorderLayout.CENTER);
         layoutPanel.add(statusBar, BorderLayout.PAGE_END);

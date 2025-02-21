@@ -1,16 +1,17 @@
 package com.morizkraemer.gui;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.util.Map;
 
-import javax.swing.*;
+import javax.swing.BoxLayout;
+import javax.swing.JPanel;
+import javax.swing.Timer;
 
 import org.deepsymmetry.beatlink.DeviceAnnouncement;
 import org.deepsymmetry.beatlink.data.WaveformPreviewComponent;
 
 import com.morizkraemer.AppConfig;
-import com.morizkraemer.gui.components.playerinfo.PlayerInfoComponent;
-import com.morizkraemer.gui.components.WaveFormComponent;
 import com.morizkraemer.state.PlayerState;
 
 public class WaveFormPreviewPanel extends JPanel {
@@ -65,6 +66,10 @@ public class WaveFormPreviewPanel extends JPanel {
         waveFormPreviewComponent.setName("Player " + playerN);
 
         add(playerComponent);
+    }
+
+    public void setVisibility(Boolean visibility) {
+        setVisible(visibility);
     }
 
 }
