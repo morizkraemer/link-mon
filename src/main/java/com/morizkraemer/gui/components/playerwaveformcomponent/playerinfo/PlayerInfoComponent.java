@@ -15,26 +15,20 @@ import org.deepsymmetry.beatlink.DeviceUpdate;
 import org.deepsymmetry.beatlink.data.TrackMetadata;
 import org.deepsymmetry.beatlink.data.TrackPositionUpdate;
 
-import com.morizkraemer.gui.ConsoleWindow;
 import com.morizkraemer.gui.components.fragments.CustomComponents.CustomPanel;
 import com.morizkraemer.state.PlayerState;
 
 public class PlayerInfoComponent extends JPanel {
 
-    ConsoleWindow consoleWindow = ConsoleWindow.getInstance();
+    private PlayerState playerState = PlayerState.getInstance();
 
     private DeviceNumberField deviceNumberField;
-
     private MasterSyncField masterSyncField;
-
     private TimeField timeField;
-
     private KeyField keyField;
-
     private BpmField bpmField;
 
     public PlayerInfoComponent(int playerN) {
-        PlayerState playerState = PlayerState.getInstance();
         Border border = BorderFactory.createLineBorder(Color.WHITE);
 
         Timer swingTimer = new Timer(1000, e -> {

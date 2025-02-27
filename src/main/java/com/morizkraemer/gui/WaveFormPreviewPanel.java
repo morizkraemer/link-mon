@@ -1,7 +1,7 @@
 package com.morizkraemer.gui;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
+import java.awt.Container;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.BoxLayout;
@@ -9,15 +9,17 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 
 import org.deepsymmetry.beatlink.DeviceAnnouncement;
-import org.deepsymmetry.beatlink.data.WaveformPreviewComponent;
 
 import com.morizkraemer.AppConfig;
+import com.morizkraemer.gui.components.PlayerPreviewComponent;
 import com.morizkraemer.state.PlayerState;
 
 public class WaveFormPreviewPanel extends JPanel {
     ConsoleWindow consoleWindow = ConsoleWindow.getInstance();
     PlayerState playerState = PlayerState.getInstance();
     int foundPlayersVersion = -1;
+
+    private Map<Integer, PlayerPreviewComponent> playerPreviewComponents = new HashMap<>();
 
     public WaveFormPreviewPanel(MainWindow mainWindow, String panelName) {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -51,15 +53,21 @@ public class WaveFormPreviewPanel extends JPanel {
     public void addPlayer(DeviceAnnouncement player) {
         int playerN = player.getDeviceNumber();
 
-        JPanel playerComponent = new JPanel(new BorderLayout());
-        WaveformPreviewComponent waveFormPreviewComponent = new WaveformPreviewComponent(playerN);
+        PlayerPreviewComponent playerPreviewComponent = new PlayerPreviewComponent(playerN);
+        playerPreviewComponents.put(playerN, playerPreviewComponent);
 
-        playerComponent.add(waveFormPreviewComponent, BorderLayout.CENTER);
-        playerComponent.setMaximumSize(new Dimension(Integer.MAX_VALUE, 200));
+        add(playerPreviewComponent);
+    }
 
-        waveFormPreviewComponent.setName("Player " + playerN);
 
-        add(playerComponent);
+    public void resizeWaveformComponent(int newSize) {
+        Container workspacePanel = getParent();
+        playerPreviewComponents.forEach((playerN, comp) -> {
+            comp.resizeComponent(newSize);
+        });
+        revalidate();
+        workspacePanel.revalidate();
+        workspacePanel.repaint();
     }
 
     public void setVisibility(Boolean visibility) {

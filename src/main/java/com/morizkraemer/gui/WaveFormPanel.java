@@ -1,5 +1,6 @@
 package com.morizkraemer.gui;
 
+import java.awt.Container;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -70,8 +71,9 @@ public class WaveFormPanel extends JPanel {
         playerComponents.forEach((playerN, comp) -> {
             comp.resizeComponent(newSize);
         });
-        revalidate();
-        repaint();
+        Container workspacePanel = getParent();
+        workspacePanel.revalidate();
+        workspacePanel.repaint();
     }
 
     public void setVisibilty(Boolean visibility) {
