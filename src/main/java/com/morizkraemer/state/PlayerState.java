@@ -79,13 +79,14 @@ public class PlayerState {
     }
 
     public void storeFoundPlayer(int playerNumber, DeviceAnnouncement device) {
-        foundPlayers.put(playerNumber, device);
-        foundPlayersVersion++;
+        if (!foundPlayers.containsKey(playerNumber)) {
+            foundPlayers.put(playerNumber, device);
+            foundPlayersVersion++;
+        }
     }
 
     public void removePlayer(int playerNumber) {
-        foundPlayers.remove(playerNumber);
-        foundPlayersVersion++;
+        if (foundPlayers.remove(playerNumber) != null) foundPlayersVersion++;
     }
 
     public void storeFoundMixer(DeviceAnnouncement device) {
