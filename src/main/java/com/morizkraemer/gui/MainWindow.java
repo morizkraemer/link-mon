@@ -1,11 +1,14 @@
 package com.morizkraemer.gui;
 
-import javax.swing.*;
-import javax.swing.border.Border;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Toolkit;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import com.morizkraemer.services.DeviceFinderService;
-
-import java.awt.*;
 
 public class MainWindow {
 
