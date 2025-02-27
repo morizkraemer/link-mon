@@ -63,7 +63,7 @@ public class MainWindow {
     public MainWindow() {
         mainWindowFrame = new JFrame("Link-Mon");
         mainWindowFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        mainWindowFrame.setSize(1200, 900);
+        mainWindowFrame.setSize(Toolkit.getDefaultToolkit().getScreenSize());
 
         setupWindowLayout();
     }

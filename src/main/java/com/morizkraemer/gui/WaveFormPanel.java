@@ -1,22 +1,27 @@
 package com.morizkraemer.gui;
 
-import java.awt.*;
+import java.util.HashMap;
 import java.util.Map;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.JPanel;
+import javax.swing.Timer;
 
 import org.deepsymmetry.beatlink.DeviceAnnouncement;
 
 import com.morizkraemer.AppConfig;
 import com.morizkraemer.AppConfig.Colors;
-import com.morizkraemer.gui.components.playerinfo.PlayerInfoComponent;
-import com.morizkraemer.gui.components.WaveFormComponent;
+import com.morizkraemer.gui.components.PlayerWaveformComponent;
 import com.morizkraemer.state.PlayerState;
 
 public class WaveFormPanel extends JPanel {
     ConsoleWindow consoleWindow = ConsoleWindow.getInstance();
     PlayerState playerState = PlayerState.getInstance();
+
     int foundPlayersVersion = -1;
+
+    private Map<Integer, PlayerWaveformComponent> playerComponents = new HashMap<>();
 
     public WaveFormPanel(MainWindow mainWindow, String panelName) {
         setBorder(BorderFactory.createLineBorder(Colors.PURE_BLACK, 5));
@@ -51,21 +56,22 @@ public class WaveFormPanel extends JPanel {
 
     }
 
-    public void addPlayer(DeviceAnnouncement player) {
+    private void addPlayer(DeviceAnnouncement player) {
         int playerN = player.getDeviceNumber();
 
-        JPanel playerComponent = new JPanel(new BorderLayout());
-        WaveFormComponent waveFormComponent = new WaveFormComponent(playerN);
-        PlayerInfoComponent playerInfo = new PlayerInfoComponent(playerN);
-        playerInfo.setPreferredSize(new Dimension(200, 200));
+        PlayerWaveformComponent playerComponent = new PlayerWaveformComponent(playerN);
 
-        playerComponent.add(waveFormComponent, BorderLayout.CENTER);
-        playerComponent.add(playerInfo, BorderLayout.WEST);
-        playerComponent.setMaximumSize(new Dimension(Integer.MAX_VALUE, 200));
-
-        waveFormComponent.setName("Player " + playerN);
+        playerComponents.put(playerN, playerComponent);
 
         add(playerComponent);
+    }
+
+    public void resizeWaveformComponent(int newSize) {
+        playerComponents.forEach((playerN, comp) -> {
+            comp.resizeComponent(newSize);
+        });
+        revalidate();
+        repaint();
     }
 
     public void setVisibilty(Boolean visibility) {

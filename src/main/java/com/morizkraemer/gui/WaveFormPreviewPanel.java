@@ -44,9 +44,6 @@ public class WaveFormPreviewPanel extends JPanel {
             });
             revalidate();
             repaint();
-            //if (mainWindow.getActivePanel() != panelName && !foundPlayers.isEmpty()) {
-            //    mainWindow.switchToPanel(panelName);
-            //}
         }
 
     }
@@ -56,11 +53,8 @@ public class WaveFormPreviewPanel extends JPanel {
 
         JPanel playerComponent = new JPanel(new BorderLayout());
         WaveformPreviewComponent waveFormPreviewComponent = new WaveformPreviewComponent(playerN);
-        //PlayerInfoComponent playerInfo = new PlayerInfoComponent(playerN);
-        //playerInfo.setPreferredSize(new Dimension(200, 200));
 
         playerComponent.add(waveFormPreviewComponent, BorderLayout.CENTER);
-        //playerComponent.add(playerInfo, BorderLayout.WEST);
         playerComponent.setMaximumSize(new Dimension(Integer.MAX_VALUE, 200));
 
         waveFormPreviewComponent.setName("Player " + playerN);

@@ -1,4 +1,4 @@
-package com.morizkraemer.gui.components.playerinfo;
+package com.morizkraemer.gui.components.playerwaveformcomponent.playerinfo;
 
 import java.awt.BorderLayout;
 import java.awt.Color;

@@ -1,4 +1,4 @@
-package com.morizkraemer.gui.components;
+package com.morizkraemer.gui.components.playerwaveformcomponent;
 
 import java.awt.Cursor;
 import java.awt.event.MouseAdapter;
@@ -14,9 +14,10 @@ public class WaveFormComponent extends WaveformDetailComponent {
     private Boolean mousePressed = false;
 
     public WaveFormComponent(int player) {
-        super(player);
 
+        super(player);
         setDoubleBuffered(true);
+
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {

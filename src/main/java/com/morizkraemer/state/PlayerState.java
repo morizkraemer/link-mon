@@ -60,14 +60,12 @@ public class PlayerState {
 
     private Map<Integer, DeviceAnnouncement> foundPlayers = new ConcurrentHashMap<>();
     public int foundPlayersVersion = 0;
+
     @SuppressWarnings("unused")
     private DeviceAnnouncement foundMixer;
-    public String foundMixerChanged = "changed";
 
     private final Map<Integer, DeviceUpdate> deviceUpdates = new ConcurrentHashMap<>();
-    public String deviceUpdatesChanged = "changed";
     private final Map<Integer, TrackMetadata> trackUpdates = new ConcurrentHashMap<>();
-    public String trackUpdatesChanged = "changed";
     private final Map<Integer, TrackPositionUpdate> trackPositionUpdates = new ConcurrentHashMap<>();
 
     public void storePlayerUpdate(int playerNumber, DeviceUpdate update) {
@@ -76,6 +74,7 @@ public class PlayerState {
 
     public void storeTrackUpdate(int playerNumber, TrackMetadata update) {
         trackUpdates.put(playerNumber, update);
+        consoleWindow.appendToConsole("trackupdate", trackUpdates);
     }
 
     public void storeFoundPlayer(int playerNumber, DeviceAnnouncement device) {

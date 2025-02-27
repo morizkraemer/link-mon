@@ -1,4 +1,4 @@
-package com.morizkraemer.gui.components;
+package com.morizkraemer.gui.components.playerwaveformcomponent;
 
 import org.deepsymmetry.beatlink.data.WaveformPreviewComponent;
 
