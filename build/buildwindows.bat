@@ -27,8 +27,7 @@ jpackage ^
     --dest "%OUTPUT_DIR%" ^
     --win-shortcut ^
     --win-menu ^
-    --win-dir-chooser ^
-    --win-console
+    --win-dir-chooser
 
 echo Build completed. Check the "%OUTPUT_DIR%" directory.
 pause
